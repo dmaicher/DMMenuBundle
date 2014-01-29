@@ -1,0 +1,40 @@
+{
+    "name": "dm/menu-bundle",
+    "description": "",
+    "keywords": [],
+    "homepage": "",
+    "type": "symfony-bundle",
+    "license": "",
+    "authors": [
+        {
+            "name": "David Maicher",
+            "email": "mail@dmaicher.de"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "symfony/framework-bundle": "~2.1"
+    },
+    "require-dev": {
+        "symfony/twig-bundle": "*",
+        "symfony/browser-kit": "*",
+        "symfony/class-loader": "*",
+        "symfony/css-selector": "*",
+        "symfony/finder": "*",
+        "symfony/form": "*",
+        "symfony/validator": "*",
+        "symfony/security": "*",
+        "symfony/process": "*",
+        "symfony/yaml": "*",
+        "sensio/framework-extra-bundle": "*"
+    },
+    "autoload": {
+        "psr-0": { "DM\\MenuBundle": "" }
+    },
+    "target-dir": "DM/MenuBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "master"
+        }
+    }
+}
