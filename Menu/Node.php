@@ -6,15 +6,14 @@ use Symfony\Component\Security\Core\SecurityContext;
 
 class Node {
 
-    /**
-     * @var string
-     */
-    protected $label;
-
-    /**
-     * @var string
-     */
-    protected $url;
+    protected $options = array(
+        'label' => null,
+        'route' => null,
+        'route_params' => array(),
+        'additional_active_routes' => array(),
+        'required_roles' => array(),
+        'attr' => array()
+    );
 
     /**
      * @var Node
@@ -25,16 +24,6 @@ class Node {
      * @var array
      */
     protected $children = array();
-
-    /**
-     * @var array
-     */
-    protected $activeRoutes = array();
-
-    /**
-     * @var array
-     */
-    protected $activeUrls = array();
 
     /**
      * @var boolean
@@ -52,11 +41,6 @@ class Node {
     protected $visible = true;
 
     /**
-     * @var array
-     */
-    protected $requiredRoles = array();
-
-    /**
      * @var boolean
      */
     protected $hasVisibleChildren = false;
@@ -66,21 +50,19 @@ class Node {
      */
     protected $activeChildren = array();
 
-    /**
-     * @var array
-     */
-    protected $viewAttributes = array();
-
-    /**
-     * @param $label
-     * @param $url
-     * @param array $routes
-     */
-    public function __construct($label, $url)
+    public function __construct(array $options = array())
     {
-        $this->label = $label;
-        $this->url = $url;
-        $this->activeUrls[] = $url;
+        $invalidOptions = array_diff_key($options, $this->options);
+
+        if(count($invalidOptions) > 0) {
+            throw new \InvalidArgumentException("unknown option(s): ".implode($invalidOptions, ', '));
+        }
+
+        $this->options = array_merge($this->options, $options);
+
+        if($this->options['route']) {
+            $this->options['additional_active_routes'][] = $this->options['route'];
+        }
     }
 
     /**
@@ -89,30 +71,18 @@ class Node {
     public function update(Request $request, SecurityContext $securityContext)
     {
         if($this->parent) {
-            foreach($this->requiredRoles as $role) {
+            foreach($this->options['required_roles'] as $role) {
                 if(!$securityContext->getToken() || !$securityContext->isGranted($role)) {
                     $this->setVisible(false);
                     return; //no further updates required for this branch of the menu tree as its invisible anyway
                 }
             }
 
-            $requestUri = $request->getUri();
-            $requestPath = $request->getPathInfo();
-
-            foreach($this->activeUrls as $url) {
-                if($requestUri == $url || $requestPath == $url) {
+            $requestRoute = $request->get('_route');
+            foreach($this->options['additional_active_routes'] as $route) {
+                if($route == $requestRoute) {
                     $this->setCurrent(true);
                     break;
-                }
-            }
-
-            if(!$this->current) {
-                $requestRoute = $request->get('_route');
-                foreach($this->activeRoutes as $route) {
-                    if($route == $requestRoute) {
-                        $this->setCurrent(true);
-                        break;
-                    }
                 }
             }
         }
@@ -183,42 +153,6 @@ class Node {
     }
 
     /**
-     * @param string $label
-     */
-    public function setLabel($label)
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
      * returns the layer of this node in the menu tree.
      * Root node has layer 0. So for actual menu nodes the layer starts with 1.
      * @return int
@@ -230,50 +164,6 @@ class Node {
         }
 
         return 0; //root
-    }
-
-    /**
-     * @return Node
-     */
-    public static function create($label, $url)
-    {
-        return new Node($label, $url);
-    }
-
-    /**
-     * @param array $activeRoutes
-     */
-    public function setActiveRoutes($activeRoutes)
-    {
-        $this->activeRoutes = $activeRoutes;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getActiveRoutes()
-    {
-        return $this->activeRoutes;
-    }
-
-    /**
-     * @param array $activeUrls
-     */
-    public function setActiveUrls($activeUrls)
-    {
-        $this->activeUrls = $activeUrls;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getActiveUrls()
-    {
-        return $this->activeUrls;
     }
 
     /**
@@ -304,8 +194,8 @@ class Node {
         $this->visible = $visible;
         if($visible && $this->parent) {
             $this->parent->setHasVisibleChildren(true);
-            if($this->url !== null) {
-                $this->parent->propagateUrl($this->url, $this->current);
+            if($this->options['route'] !== null) {
+                $this->parent->propagateRoute($this->options['route'], $this->options['route_params'], $this->current);
             }
         }
     }
@@ -315,41 +205,21 @@ class Node {
      */
     public function getVisible()
     {
-        return $this->visible && ($this->url !== null || $this->hasVisibleChildren);
+        return $this->visible && ($this->options['route'] !== null || $this->hasVisibleChildren);
     }
 
-    /**
-     * @param array $requiredRoles
-     */
-    public function setRequiredRoles($requiredRoles)
+    protected function propagateRoute($route, array $routeParams, $current)
     {
-        $this->requiredRoles = $requiredRoles;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRequiredRoles()
-    {
-        return $this->requiredRoles;
-    }
-
-    /**
-     * @param \DM\MenuBundle\Menu\Node $firstVisibleChild
-     */
-    protected function propagateUrl($url, $current)
-    {
-        if($this->url === null) {
-            $this->url = $url;
+        if($this->options['route'] === null) {
+            $this->options['route'] = $route;
+            $this->options['route_params'] = $routeParams;
             if($current) {
                 $this->setCurrent(true);
             }
         }
 
         if($this->parent) {
-            $this->parent->propagateUrl($url, $this->current);
+            $this->parent->propagateRoute($route, $routeParams, $this->current);
         }
     }
 
@@ -386,20 +256,27 @@ class Node {
     }
 
     /**
-     * @param array $viewAttributes
+     * @param $key
+     * @param null $default
+     * @return null
      */
-    public function setViewAttributes($viewAttributes)
+    public function get($key, $default = null)
     {
-        $this->viewAttributes = $viewAttributes;
+        if(isset($this->options[$key])){
+            return $this->options[$key];
+        }
 
-        return $this;
+        return $default;
     }
 
     /**
-     * @return array
+     * @param null $label
+     * @param array $options
+     * @return Node
      */
-    public function getViewAttributes()
+    public static function create($label = null, array $options = array())
     {
-        return $this->viewAttributes;
+        $options['label'] = $label;
+        return new Node($options);
     }
 } 

@@ -48,8 +48,8 @@
         {% set classes = classes|merge(['menu-item-has-current']) %}
     {% endif %}
 
-    {% set finalClasses = classes|merge(currentNode.getViewAttributes()['class']|default('')|split(' ')) %}
-    {% set viewAttributes = currentNode.getViewAttributes()|merge({'class':finalClasses|join(' ')}) %}
+    {% set finalClasses = classes|merge(currentNode.get('attr')['class']|default('')|split(' ')) %}
+    {% set viewAttributes = currentNode.get('attr')|merge({'class':finalClasses|join(' ')}) %}
 
     {%- for key, val in viewAttributes -%}
         {{- " " -}}{{- key }}="{{ val }}"
@@ -57,7 +57,7 @@
 {% endblock %}
 
 {% block render_label %}
-    {{ currentNode.getLabel()|trans }}
+    {{ currentNode.get('label')|trans }}
 {% endblock %}
 
 {% block render_current_item_inner %}
@@ -65,7 +65,11 @@
 {% endblock %}
 
 {% block render_default_item_inner %}
-    <a href="{{ currentNode.getUrl() }}">{{ block('render_label') }}</a>
+    {% set url = "" %}
+    {% if currentNode.get('route') %}
+        {% set url = path(currentNode.get('route'), currentNode.get('route_params')) %}
+    {% endif %}
+    <a href="{{ url }}">{{ block('render_label') }}</a>
 {% endblock %}
 
 

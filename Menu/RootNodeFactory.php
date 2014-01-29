@@ -7,6 +7,6 @@ class RootNodeFactory implements NodeFactory {
      */
     public function create()
     {
-        return Node::create(null, null);
+        return new Node();
     }
 } 
