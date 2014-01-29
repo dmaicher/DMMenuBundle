@@ -1,0 +1,14 @@
+parameters:
+  dm_menu.twig.default_template: 'DMMenuBundle::menu.html.twig'
+  dm_menu.twig.menu_extension.class: DM\MenuBundle\Twig\MenuExtension
+  dm_menu.root_node_factory.class: DM\MenuBundle\Menu\RootNodeFactory
+
+services:
+  dm_menu.twig.menu_extension:
+    class: %dm_menu.twig.menu_extension.class%
+    arguments: [@service_container]
+    tags:
+      - { name: twig.extension }
+
+  dm_menu.root_node_factory:
+    class: %dm_menu.root_node_factory.class%

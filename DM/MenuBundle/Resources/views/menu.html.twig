@@ -1,0 +1,73 @@
+{% block render_children_nodes %}
+    {% if currentNode.hasVisibleChildren() %}
+        {% set activeChild = currentNode.getActiveChildren()|first %}
+
+        <ul{{ block('render_list_attr') }}>
+            {% for child in currentNode.getChildren() %}
+                {% set currentNode = child %}
+                {{ block('render_node') }}
+            {% endfor %}
+        </ul>
+
+        {% if not nested and (activeChild or not collapse) %}
+            {% set currentNode = activeChild %}
+            {{ block('render_children_nodes') }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block render_node %}
+    {% if currentNode.getVisible() %}
+        <li{{ block('render_item_attr') }}>
+            {% if currentNode.getCurrent() %}
+                {{ block('render_current_item_inner') }}
+            {% else %}
+                {{ block('render_default_item_inner') }}
+            {% endif %}
+            {% if nested and (currentNode.getActive() or not collapse) %}
+                {{ block('render_children_nodes') }}
+            {% endif %}
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block render_root %}
+    {{ block('render_children_nodes') }}
+{% endblock %}
+
+{% block render_list_attr %}
+    class="menu menu-layer-{{ currentNode.getLayer() + 1 }}"
+{% endblock %}
+
+{% block render_item_attr %}
+    {% set classes = ['menu-item'] %}
+
+    {% if currentNode.getCurrent() %}
+        {% set classes = classes|merge(['menu-item-current']) %}
+    {% elseif currentNode.getActive() %}
+        {% set classes = classes|merge(['menu-item-has-current']) %}
+    {% endif %}
+
+    {% set finalClasses = classes|merge(currentNode.getViewAttributes()['class']|default('')|split(' ')) %}
+    {% set viewAttributes = currentNode.getViewAttributes()|merge({'class':finalClasses|join(' ')}) %}
+
+    {%- for key, val in viewAttributes -%}
+        {{- " " -}}{{- key }}="{{ val }}"
+    {%- endfor -%}
+{% endblock %}
+
+{% block render_label %}
+    {{ currentNode.getLabel()|trans }}
+{% endblock %}
+
+{% block render_current_item_inner %}
+    <span>{{ block('render_label') }}</span>
+{% endblock %}
+
+{% block render_default_item_inner %}
+    <a href="{{ currentNode.getUrl() }}">{{ block('render_label') }}</a>
+{% endblock %}
+
+
+
+
