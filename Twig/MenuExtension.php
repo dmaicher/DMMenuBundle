@@ -66,8 +66,9 @@ class MenuExtension extends \Twig_Extension {
      */
     protected function buildMenu($menuBuilderServiceId)
     {
-        $menu = $this->get('dm_menu.root_node_factory')->create();
-        $this->get($menuBuilderServiceId)->buildMenu($menu);
+        $factory = $this->get('dm_menu.default_node_factory');
+        $menu = $factory->create(null);
+        $this->get($menuBuilderServiceId)->buildMenu($menu, $factory);
 
         return $menu;
     }

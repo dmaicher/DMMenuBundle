@@ -47,7 +47,7 @@
     {% elseif currentNode.getActive() %}
         {% set classes = classes|merge(['menu-item-active']) %}
     {% endif %}
-     {% if currentNode.isFirstChild() %}
+     {% if currentNode.isFirstVisibleChild() %}
         {% set classes = classes|merge(['menu-item-first']) %}
     {% endif %}
 

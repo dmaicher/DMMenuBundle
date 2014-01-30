@@ -43,7 +43,7 @@ class Node {
     /**
      * @var boolean
      */
-    protected $hasVisibleChildren = false;
+    protected $visibleChildren = array();
 
     /**
      * @var array
@@ -53,8 +53,13 @@ class Node {
     /**
      * @var boolean
      */
-    protected $isFirstChild = false;
+    protected $isFirstVisibleChild = false;
 
+    /**
+     * 
+     * @param array $options
+     * @throws \InvalidArgumentException
+     */
     public function __construct(array $options = array())
     {
         $invalidOptions = array_diff_key($options, $this->options);
@@ -143,10 +148,6 @@ class Node {
      */
     public function addChild(Node $child)
     {
-        if(count($this->children) == 0) {
-            $child->setIsFirstChild(true);
-        }
-        
         $this->children[] = $child;
         $child->setParent($this);
 
@@ -202,7 +203,7 @@ class Node {
     {
         $this->visible = $visible;
         if($visible && $this->parent) {
-            $this->parent->setHasVisibleChildren(true);
+            $this->parent->addVisibleChild($this);
             if($this->options['route'] !== null) {
                 $this->parent->propagateRoute($this->options['route'], $this->options['route_params'], $this->current);
             }
@@ -237,21 +238,25 @@ class Node {
      */
     public function hasVisibleChildren()
     {
-        return $this->hasVisibleChildren;
+        return count($this->visibleChildren) > 0;
     }
 
     /**
-     * @param boolean $hasVisibleChildren
+     * @param \DM\MenuBundle\Menu\Node $child
      */
-    protected function setHasVisibleChildren($hasVisibleChildren)
+    protected function addVisibleChild(Node $child)
     {
-        $this->hasVisibleChildren = $hasVisibleChildren;
+        if(count($this->visibleChildren) == 0) {
+            $child->setIsFirstVisibleChild(true);
+        }
+        
+        $this->visibleChildren[] = $child;
     }
 
     /**
      * @param \DM\MenuBundle\Menu\Node $activeChild
      */
-    protected function addActiveChild($activeChild)
+    protected function addActiveChild(Node $activeChild)
     {
         $this->activeChildren[] = $activeChild;
     }
@@ -265,19 +270,19 @@ class Node {
     }
     
     /**
-     * @param boolean $isFirstChild
+     * @param boolean $isFirstVisibleChild
      */
-    public function setIsFirstChild($isFirstChild)
+    public function setIsFirstVisibleChild($isFirstVisibleChild)
     {
-        $this->isFirstChild = $isFirstChild;
+        $this->isFirstVisibleChild = $isFirstVisibleChild;
     }
     
     /**
      * @return boolean
      */
-    public function isFirstChild()
+    public function isFirstVisibleChild()
     {
-        return $this->isFirstChild;
+        return $this->isFirstVisibleChild;
     }
 
     /**
@@ -292,16 +297,5 @@ class Node {
         }
 
         return $default;
-    }
-
-    /**
-     * @param null $label
-     * @param array $options
-     * @return Node
-     */
-    public static function create($label = null, array $options = array())
-    {
-        $options['label'] = $label;
-        return new Node($options);
     }
 } 

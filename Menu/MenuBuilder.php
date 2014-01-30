@@ -2,5 +2,5 @@
 namespace DM\MenuBundle\Menu;
 
 interface MenuBuilder {
-    public function buildMenu(Node $root);
+    public function buildMenu(Node $root, NodeFactory $factory);
 } 

@@ -5,5 +5,5 @@ interface NodeFactory {
     /**
      * @return Node
      */
-    public function create();
+    public function create($label, array $options = array());
 } 
