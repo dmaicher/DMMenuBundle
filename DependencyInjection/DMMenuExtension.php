@@ -22,6 +22,14 @@ class DMMenuExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $menuConfig = array();
+
+        if(isset($configs[0]['menues'])) {
+            $menuConfig = $configs[0]['menues'];
+        }
+
+        $container->setParameter('dm_menu.menu_definitions', $menuConfig);
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

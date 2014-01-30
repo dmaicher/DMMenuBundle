@@ -2,19 +2,37 @@
 namespace DM\MenuBundle\Twig;
 
 
+use DM\MenuBundle\Menu\MenuFactoryInterface;
 use DM\MenuBundle\Menu\Node;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MenuExtension extends \Twig_Extension {
 
     /**
-     * @var ContainerInterface
+     * @var MenuFactoryInterface
      */
-    private $container;
+    private $menuFactory;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var \Twig_Environment
+     */
+    protected $twig;
+
+    /**
+     * @var string
+     */
+    protected $defaultTemplate;
+
+    /**
+     * @var array
+     */
+    protected $menuDefinitions;
+
+    public function __construct(MenuFactoryInterface $menuFactory, \Twig_Environment $twig, $defaultTemplate, array $menuDefinitions)
     {
-        $this->container = $container;
+        $this->menuFactory = $menuFactory;
+        $this->twig = $twig;
+        $this->defaultTemplate = $defaultTemplate;
+        $this->menuDefinitions = $menuDefinitions;
     }
 
     public function getFunctions()
@@ -25,17 +43,15 @@ class MenuExtension extends \Twig_Extension {
     }
 
     /**
-     * @param string $menuBuilderServiceId
+     * @param $name
+     * @param array $options
      * @return mixed
      */
-    public function render($menuBuilderServiceId, array $options = array())
+    public function render($name, array $options = array())
     {
-        $menu = $this->buildMenu($menuBuilderServiceId);
+        $menu = $this->menuFactory->create($name);
 
-        $menu->update($this->get('request'), $this->get('security.context'));
-        
         $defaultOptions = array(
-            'template' => $this->getDefaultTemplate(),
             'collapse' => false,
             'nested' => true
         );
@@ -43,42 +59,26 @@ class MenuExtension extends \Twig_Extension {
         $finalOptions = array_merge($defaultOptions, $options);
         $finalOptions['currentNode'] = $menu;
 
-        $template = $this->get('twig')->loadTemplate($finalOptions['template']);
+        return $this->getTemplate($name)->renderBlock('render_root', $finalOptions);
+    }
 
-        return $template->renderBlock('render_root', $finalOptions);
+    /**
+     * @param $name
+     * @return \Twig_TemplateInterface
+     */
+    protected function getTemplate($name)
+    {
+        $template = $this->defaultTemplate;
+
+        if(isset($this->menuDefinitions[$name]['twig_template'])) {
+            $template = $this->menuDefinitions[$name]['twig_template'];
+        }
+
+        return $this->twig->loadTemplate($template);
     }
 
     public function getName()
     {
         return 'dm_menu_extension';
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getDefaultTemplate()
-    {
-        return $this->container->getParameter('dm_menu.twig.default_template');
-    }
-
-    /**
-     * @param string $menuBuilderServiceId
-     */
-    protected function buildMenu($menuBuilderServiceId)
-    {
-        $factory = $this->get('dm_menu.default_node_factory');
-        $menu = $factory->create(null);
-        $this->get($menuBuilderServiceId)->buildMenu($menu, $factory);
-
-        return $menu;
-    }
-
-    /**
-     * @param string $id
-     * @return object
-     */
-    protected function get($id)
-    {
-        return $this->container->get($id);
     }
 } 

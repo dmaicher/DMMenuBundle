@@ -1,7 +1,7 @@
 <?php
-namespace DM\MenuBundle\Menu;
+namespace DM\MenuBundle\Node;
 
-interface NodeFactory {
+interface NodeFactoryInterface {
     /**
      * @return Node
      */

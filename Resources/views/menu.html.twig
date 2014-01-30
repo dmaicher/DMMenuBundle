@@ -1,6 +1,6 @@
 {% block render_children_nodes %}
-    {% if currentNode.hasVisibleChildren() %}
-        {% set activeChild = currentNode.getActiveChildren()|first %}
+    {% if currentNode.getChildren()|length > 0 %}
+        {% set activeChild = currentNode.getActiveChild() %}
 
         <ul{{ block('render_list_attr') }}>
             {% for child in currentNode.getChildren() %}
@@ -17,18 +17,12 @@
 {% endblock %}
 
 {% block render_node %}
-    {% if currentNode.getVisible() %}
-        <li{{ block('render_item_attr') }}>
-            {% if currentNode.getCurrent() %}
-                {{ block('render_current_item_inner') }}
-            {% else %}
-                {{ block('render_default_item_inner') }}
-            {% endif %}
-            {% if nested and (currentNode.getActive() or not collapse) %}
-                {{ block('render_children_nodes') }}
-            {% endif %}
-        </li>
-    {% endif %}
+    <li{{ block('render_item_attr') }}>
+        {{ block('render_item_inner') }}
+        {% if nested and (currentNode.isActive() or not collapse) %}
+            {{ block('render_children_nodes') }}
+        {% endif %}
+    </li>
 {% endblock %}
 
 {% block render_root %}
@@ -42,12 +36,10 @@
 {% block render_item_attr %}
     {% set classes = ['menu-item'] %}
 
-    {% if currentNode.getCurrent() %}
-        {% set classes = classes|merge(['menu-item-active', 'menu-item-current']) %}
-    {% elseif currentNode.getActive() %}
+    {% if currentNode.isActive() %}
         {% set classes = classes|merge(['menu-item-active']) %}
     {% endif %}
-     {% if currentNode.isFirstVisibleChild() %}
+     {% if currentNode.isFirstChild() %}
         {% set classes = classes|merge(['menu-item-first']) %}
     {% endif %}
 
@@ -63,11 +55,7 @@
     {{ currentNode.get('label')|trans }}
 {% endblock %}
 
-{% block render_current_item_inner %}
-    <span>{{ block('render_label') }}</span>
-{% endblock %}
-
-{% block render_default_item_inner %}
+{% block render_item_inner %}
     {% set url = "" %}
     {% if currentNode.get('route') %}
         {% set url = path(currentNode.get('route'), currentNode.get('route_params')) %}

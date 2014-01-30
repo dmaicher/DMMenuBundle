@@ -1,7 +1,7 @@
 <?php
-namespace DM\MenuBundle\Menu;
+namespace DM\MenuBundle\Node;
 
-class DefaultNodeFactory implements NodeFactory {
+class NodeFactory implements NodeFactoryInterface {
     /**
      * @return Node
      */

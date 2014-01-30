@@ -20,9 +20,19 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('dm_menu');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->arrayNode('menues')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('tree_builder')->isRequired()->end()
+                            ->scalarNode('node_factory')->end()
+                            ->scalarNode('twig_template')->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+
 
         return $treeBuilder;
     }

@@ -1,14 +1,19 @@
 parameters:
   dm_menu.twig.default_template: 'DMMenuBundle::menu.html.twig'
   dm_menu.twig.menu_extension.class: DM\MenuBundle\Twig\MenuExtension
-  dm_menu.default_node_factory.class: DM\MenuBundle\Menu\DefaultNodeFactory
+  dm_menu.node_factory.class: DM\MenuBundle\Node\NodeFactory
+  dm_menu.menu_factory.class: DM\MenuBundle\Menu\MenuFactory
 
 services:
   dm_menu.twig.menu_extension:
     class: %dm_menu.twig.menu_extension.class%
-    arguments: [@service_container]
+    arguments: [@dm_menu.menu_factory, @twig, %dm_menu.twig.default_template%, %dm_menu.menu_definitions%]
     tags:
       - { name: twig.extension }
 
-  dm_menu.default_node_factory:
-    class: %dm_menu.default_node_factory.class%
+  dm_menu.node_factory:
+    class: %dm_menu.node_factory.class%
+
+  dm_menu.menu_factory:
+    class: %dm_menu.menu_factory.class%
+    arguments: [@service_container]
