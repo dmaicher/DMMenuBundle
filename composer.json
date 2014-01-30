@@ -34,7 +34,8 @@
     "target-dir": "DM/MenuBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "master"
+            "dev-master": "master",
+            "v1.0": "v1.0"
         }
     }
 }
