@@ -49,6 +49,11 @@ class Node {
      * @var array
      */
     protected $activeChildren = array();
+    
+    /**
+     * @var boolean
+     */
+    protected $isFirstChild = false;
 
     public function __construct(array $options = array())
     {
@@ -138,6 +143,10 @@ class Node {
      */
     public function addChild(Node $child)
     {
+        if(count($this->children) == 0) {
+            $child->setIsFirstChild(true);
+        }
+        
         $this->children[] = $child;
         $child->setParent($this);
 
@@ -253,6 +262,22 @@ class Node {
     public function getActiveChildren()
     {
         return $this->activeChildren;
+    }
+    
+    /**
+     * @param boolean $isFirstChild
+     */
+    public function setIsFirstChild($isFirstChild)
+    {
+        $this->isFirstChild = $isFirstChild;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function isFirstChild()
+    {
+        return $this->isFirstChild;
     }
 
     /**

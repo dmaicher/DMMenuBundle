@@ -28,20 +28,24 @@ class MenuExtension extends \Twig_Extension {
      * @param string $menuBuilderServiceId
      * @return mixed
      */
-    public function render($menuBuilderServiceId, $template = null)
+    public function render($menuBuilderServiceId, array $options = array())
     {
         $menu = $this->buildMenu($menuBuilderServiceId);
 
         $menu->update($this->get('request'), $this->get('security.context'));
+        
+        $defaultOptions = array(
+            'template' => $this->getDefaultTemplate(),
+            'collapse' => false,
+            'nested' => true
+        );
+        
+        $finalOptions = array_merge($defaultOptions, $options);
+        $finalOptions['currentNode'] = $menu;
 
+        $template = $this->get('twig')->loadTemplate($finalOptions['template']);
 
-        $templateObj = $this->get('twig')->loadTemplate($template ? : $this->getDefaultTemplate());
-
-        return $templateObj->renderBlock('render_root', array(
-            'currentNode' => $menu,
-            'collapse' => true,
-            'nested' => true,
-        ));
+        return $template->renderBlock('render_root', $finalOptions);
     }
 
     public function getName()

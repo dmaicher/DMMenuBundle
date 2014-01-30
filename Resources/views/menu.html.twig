@@ -43,9 +43,12 @@
     {% set classes = ['menu-item'] %}
 
     {% if currentNode.getCurrent() %}
-        {% set classes = classes|merge(['menu-item-current']) %}
+        {% set classes = classes|merge(['menu-item-active', 'menu-item-current']) %}
     {% elseif currentNode.getActive() %}
-        {% set classes = classes|merge(['menu-item-has-current']) %}
+        {% set classes = classes|merge(['menu-item-active']) %}
+    {% endif %}
+     {% if currentNode.isFirstChild() %}
+        {% set classes = classes|merge(['menu-item-first']) %}
     {% endif %}
 
     {% set finalClasses = classes|merge(currentNode.get('attr')['class']|default('')|split(' ')) %}
