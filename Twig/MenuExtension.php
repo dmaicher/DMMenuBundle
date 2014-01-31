@@ -2,6 +2,7 @@
 namespace DM\MenuBundle\Twig;
 
 
+use DM\MenuBundle\Menu\MenuDefinitionHolder;
 use DM\MenuBundle\Menu\MenuFactoryInterface;
 use DM\MenuBundle\Menu\Node;
 
@@ -18,21 +19,17 @@ class MenuExtension extends \Twig_Extension {
     protected $twig;
 
     /**
-     * @var string
+     * @var MenuDefinitionHolder
      */
-    protected $defaultTemplate;
+    protected $menuDefinitionHolder;
 
-    /**
-     * @var array
-     */
-    protected $menuDefinitions;
-
-    public function __construct(MenuFactoryInterface $menuFactory, \Twig_Environment $twig, $defaultTemplate, array $menuDefinitions)
-    {
+    public function __construct(
+        MenuFactoryInterface $menuFactory, \Twig_Environment $twig,
+        MenuDefinitionHolder $menuDefinitionHolder
+    ){
         $this->menuFactory = $menuFactory;
         $this->twig = $twig;
-        $this->defaultTemplate = $defaultTemplate;
-        $this->menuDefinitions = $menuDefinitions;
+        $this->menuDefinitionHolder = $menuDefinitionHolder;
     }
 
     public function getFunctions()
@@ -68,13 +65,9 @@ class MenuExtension extends \Twig_Extension {
      */
     protected function getTemplate($name)
     {
-        $template = $this->defaultTemplate;
+        $menuDefinition = $this->menuDefinitionHolder->getMenuDefinition($name);
 
-        if(isset($this->menuDefinitions[$name]['twig_template'])) {
-            $template = $this->menuDefinitions[$name]['twig_template'];
-        }
-
-        return $this->twig->loadTemplate($template);
+        return $this->twig->loadTemplate($menuDefinition['twig_template']);
     }
 
     public function getName()

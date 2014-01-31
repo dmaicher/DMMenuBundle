@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('menues')
+                    ->requiresAtLeastOneElement()
                     ->prototype('array')
                         ->children()
                             ->scalarNode('tree_builder')->isRequired()->end()

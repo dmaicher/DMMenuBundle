@@ -1,13 +1,17 @@
 parameters:
-  dm_menu.twig.default_template: 'DMMenuBundle::menu.html.twig'
   dm_menu.twig.menu_extension.class: DM\MenuBundle\Twig\MenuExtension
   dm_menu.node_factory.class: DM\MenuBundle\Node\NodeFactory
   dm_menu.menu_factory.class: DM\MenuBundle\Menu\MenuFactory
+  dm_menu.menu_definition_holder.class: DM\MenuBundle\Menu\MenuDefinitionHolder
+  dm_menu.menu_tree_traverser.class: DM\MenuBundle\MenuTree\MenuTreeTraverser
+  dm_menu.node_visitor.filter.class: DM\MenuBundle\NodeVisitor\NodeFilter
+  dm_menu.node_visitor.activator.class: DM\MenuBundle\NodeVisitor\NodeActivator
+  dm_menu.node_visitor.node_route_propagator.class: DM\MenuBundle\NodeVisitor\NodeRoutePropagator
 
 services:
   dm_menu.twig.menu_extension:
     class: %dm_menu.twig.menu_extension.class%
-    arguments: [@dm_menu.menu_factory, @twig, %dm_menu.twig.default_template%, %dm_menu.menu_definitions%]
+    arguments: [@dm_menu.menu_factory, @twig, @dm_menu.menu_definition_holder]
     tags:
       - { name: twig.extension }
 
@@ -16,4 +20,27 @@ services:
 
   dm_menu.menu_factory:
     class: %dm_menu.menu_factory.class%
-    arguments: [@service_container]
+    arguments: [@dm_menu.menu_definition_holder, @dm_menu.menu_tree_traverser]
+
+  dm_menu.menu_definition_holder:
+    class: %dm_menu.menu_definition_holder.class%
+
+  dm_menu.menu_tree_traverser:
+    class: %dm_menu.menu_tree_traverser.class%
+
+  dm_menu.node_visitor.filter:
+    class: %dm_menu.node_visitor.filter.class%
+    arguments: [@security.context]
+    tags:
+      - { name: dm_menu.node_visitor, priority: 1 }
+
+  dm_menu.node_visitor.activator:
+    class: %dm_menu.node_visitor.activator.class%
+    arguments: [@?request=]
+    tags:
+      - { name: dm_menu.node_visitor, priority: 2 }
+
+  dm_menu.node_visitor.node_route_propagator:
+      class: %dm_menu.node_visitor.node_route_propagator.class%
+      tags:
+        - { name: dm_menu.node_visitor, priority: 3 }

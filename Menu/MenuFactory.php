@@ -1,27 +1,22 @@
 <?php
 namespace DM\MenuBundle\Menu;
 
+use DM\MenuBundle\MenuTree\MenuTreeBuilderInterface;
+use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
 use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\Node\NodeFactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Security\Core\SecurityContext;
 
 class MenuFactory implements MenuFactoryInterface {
 
     /**
-     * @var ContainerInterface
+     * @var MenuDefinitionHolder
      */
-    protected $container;
+    protected $menuDefinitionHolder;
 
     /**
-     * @var SecurityContext
+     * @var MenuTreeTraverserInterface
      */
-    protected $securityContext;
-
-    /**
-     * @var array
-     */
-    protected $menuDefinitions;
+    protected $menuTreeTraverser;
 
     /**
      * @var array
@@ -29,13 +24,13 @@ class MenuFactory implements MenuFactoryInterface {
     protected $cache = array();
 
     /**
-     * @param ContainerInterface $container
+     * @param MenuDefinitionHolder $menuDefinitionHolder
+     * @param MenuTreeTraverserInterface $menuTreeTraverser
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(MenuDefinitionHolder $menuDefinitionHolder, MenuTreeTraverserInterface $menuTreeTraverser)
     {
-        $this->securityContext = $container->get('security.context');
-        $this->menuDefinitions = $container->getParameter('dm_menu.menu_definitions');
-        $this->container = $container;
+        $this->menuDefinitionHolder = $menuDefinitionHolder;
+        $this->menuTreeTraverser = $menuTreeTraverser;
     }
 
     /**
@@ -50,33 +45,11 @@ class MenuFactory implements MenuFactoryInterface {
             return $this->cache[$name];
         }
 
-        if(!isset($this->menuDefinitions[$name])) {
-            throw new \InvalidArgumentException("menu with name '{$name}' not found!");
-        }
+        $menuDefinition = $this->menuDefinitionHolder->getMenuDefinition($name);
 
-        $menuDefinition = $this->menuDefinitions[$name];
+        $root = $this->getRootNode($menuDefinition['node_factory'], $menuDefinition['tree_builder']);
 
-        $nodeTreeBuilder = $this->getObjectFromConfigValue($menuDefinition['tree_builder']);
-
-        if(!$nodeTreeBuilder instanceof MenuTreeBuilderInterface) {
-            throw new \InvalidArgumentException("configured tree_builder has to be of type MenuTreeBuilderInterface");
-        }
-
-        if(isset($menuDefinition['node_factory'])) {
-            $nodeFactory = $this->getObjectFromConfigValue($menuDefinition['node_factory']);
-
-            if(!$nodeTreeBuilder instanceof NodeFactoryInterface) {
-                throw new \InvalidArgumentException("configured node_factory has to be of type NodeFactoryInterface");
-            }
-        }
-        else {
-            $nodeFactory = $this->container->get('dm_menu.node_factory');
-        }
-
-        $root = $nodeFactory->create(null);
-        $nodeTreeBuilder->buildTree($root, $nodeFactory);
-
-        $this->traverseTree($root);
+        $this->menuTreeTraverser->traverse($root);
 
         //store in "cache"
         $this->cache[$name] = $root;
@@ -85,95 +58,15 @@ class MenuFactory implements MenuFactoryInterface {
     }
 
     /**
-     * @param Node $node
+     * @param NodeFactoryInterface $nodeFactory
+     * @param MenuTreeBuilderInterface $menuTreeBuilder
+     * @return Node
      */
-    protected function traverseTree(Node $node)
+    protected function getRootNode(NodeFactoryInterface $nodeFactory, MenuTreeBuilderInterface $menuTreeBuilder)
     {
-        if(!$this->isNodeVisible($node)) {
-            $node->getParent()->removeChild($node);
-            return;
-        }
+        $root = $nodeFactory->create(null);
+        $menuTreeBuilder->buildTree($root, $nodeFactory);
 
-        if($this->isNodeActive($node)) {
-            $node->setActive(true);
-        }
-
-        $firstChildWithRoute = null;
-        foreach($node->getChildren() as $child) {
-            $this->traverseTree($child);
-            if($firstChildWithRoute === null && $child->getParent() !== null && $child->hasRoute()) {
-                $firstChildWithRoute = $child;
-            }
-        }
-
-        if(!$node->isRootNode() && !$node->hasRoute() && $firstChildWithRoute !== null) {
-            $node->set('route', $firstChildWithRoute->get('route'));
-            $node->set('route_params', $firstChildWithRoute->get('route_params'));
-        }
+        return $root;
     }
-
-    /**
-     * @param Node $node
-     * @return bool
-     */
-    protected function isNodeVisible(Node $node)
-    {
-        if($node->isRootNode()) {
-            return true;
-        }
-
-        foreach($node->get('required_roles') as $role) {
-            if(!$this->securityContext->getToken() || !$this->securityContext->isGranted($role)) {
-               return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param Node $node
-     * @return bool
-     */
-    protected function isNodeActive(Node $node)
-    {
-        $currentRoute = $this->getCurrentRoute();
-        foreach($node->get('additional_active_routes') as $route) {
-            if($route == $currentRoute) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param $value
-     * @return object
-     * @throws \InvalidArgumentException
-     */
-    protected function getObjectFromConfigValue($value)
-    {
-        if($this->container->has($value)) {
-            return $this->container->get($value);
-        }
-
-        if(class_exists($value)) {
-            return new $value();
-        }
-
-        throw new \InvalidArgumentException("value '{$value}' is neither a valid class nor an existing service!");
-    }
-    
-    /**
-     * @return string
-     */
-    protected function getCurrentRoute()
-    {
-        if($this->container->isScopeActive('request')) {
-            return $this->container->get('request')->get('_route');
-        }
-        
-        return null;
-    }
-} 
+}
