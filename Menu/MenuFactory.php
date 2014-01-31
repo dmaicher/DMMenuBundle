@@ -39,7 +39,9 @@ class MenuFactory implements MenuFactoryInterface {
     public function __construct(ContainerInterface $container)
     {
         $this->securityContext = $container->get('security.context');
-        $this->currentRoute = $container->get('request')->get('_route');
+        if($container->isScopeActive('request')) {
+            $this->currentRoute = $container->get('request')->get('_route');
+        }
         $this->menuDefinitions = $container->getParameter('dm_menu.menu_definitions');
         $this->container = $container;
     }
