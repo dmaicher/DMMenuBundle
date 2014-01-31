@@ -5,7 +5,7 @@ use DM\MenuBundle\Node\Node;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * This visitor will set a node to active if one of its routes matches the current node of the request.
+ * This visitor will set a node to active if one of its routes matches the current route of the request.
  *
  * Class NodeActivator
  * @package DM\MenuBundle\NodeVisitor
