@@ -19,11 +19,6 @@ class MenuFactory implements MenuFactoryInterface {
     protected $securityContext;
 
     /**
-     * @var string
-     */
-    protected $currentRoute;
-
-    /**
      * @var array
      */
     protected $menuDefinitions;
@@ -39,9 +34,6 @@ class MenuFactory implements MenuFactoryInterface {
     public function __construct(ContainerInterface $container)
     {
         $this->securityContext = $container->get('security.context');
-        if($container->isScopeActive('request')) {
-            $this->currentRoute = $container->get('request')->get('_route');
-        }
         $this->menuDefinitions = $container->getParameter('dm_menu.menu_definitions');
         $this->container = $container;
     }
@@ -145,8 +137,9 @@ class MenuFactory implements MenuFactoryInterface {
      */
     protected function isNodeActive(Node $node)
     {
+        $currentRoute = $this->getCurrentRoute();
         foreach($node->get('additional_active_routes') as $route) {
-            if($route == $this->currentRoute) {
+            if($route == $currentRoute) {
                 return true;
             }
         }
@@ -170,5 +163,17 @@ class MenuFactory implements MenuFactoryInterface {
         }
 
         throw new \InvalidArgumentException("value '{$value}' is neither a valid class nor an existing service!");
+    }
+    
+    /**
+     * @return string
+     */
+    protected function getCurrentRoute()
+    {
+        if($this->container->isScopeActive('request')) {
+            return $this->container->get('request')->get('_route');
+        }
+        
+        return null;
     }
 } 
