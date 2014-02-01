@@ -55,10 +55,6 @@ class Node {
 
         $this->options = array_merge($this->options, $options);
 
-        if($this->options['route']) {
-            $this->options['additional_active_routes'][] = $this->options['route'];
-        }
-
         $this->id = self::$counter++;
     }
 
