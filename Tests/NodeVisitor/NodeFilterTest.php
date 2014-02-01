@@ -55,7 +55,7 @@ class NodeFilterTest extends \PHPUnit_Framework_TestCase {
      */
     public function testVisit(array $roles, $getTokenReturn, $isGrantedReturn, $expectsFiltered)
     {
-        $this->node->set('required_roles', $roles);
+        $this->node->setRequiredRoles($roles);
 
         $this->securityContext
             ->expects($this->any())

@@ -9,21 +9,39 @@ class Node {
     private static $counter = 0;
 
     /**
-     * @var array
-     */
-    protected $options = array(
-        'label' => null,
-        'route' => null,
-        'route_params' => array(),
-        'additional_active_routes' => array(),
-        'required_roles' => array(),
-        'attr' => array()
-    );
-
-    /**
      * @var int
      */
     protected $id;
+
+    /**
+     * @var string
+     */
+    protected $label;
+
+    /**
+     * @var string
+     */
+    protected $route;
+
+    /**
+     * @var array
+     */
+    protected $routeParams = array();
+
+    /**
+     * @var array
+     */
+    protected $additionalActiveRoutes = array();
+
+    /**
+     * @var array
+     */
+    protected $requiredRoles = array();
+
+    /**
+     * @var array
+     */
+    protected $attr = array();
 
     /**
      * @var Node
@@ -41,20 +59,11 @@ class Node {
     protected $active = false;
 
     /**
-     * 
-     * @param array $options
-     * @throws \InvalidArgumentException
+     * @param $label
      */
-    public function __construct(array $options = array())
+    public function __construct($label = null)
     {
-        $invalidOptions = array_diff_key($options, $this->options);
-
-        if(count($invalidOptions) > 0) {
-            throw new \InvalidArgumentException("unknown option(s): ".implode($invalidOptions, ', '));
-        }
-
-        $this->options = array_merge($this->options, $options);
-
+        $this->label = $label;
         $this->id = self::$counter++;
     }
 
@@ -146,9 +155,10 @@ class Node {
     }
 
     /**
+     * returns the first active child
      * @return Node|null
      */
-    public function getActiveChild()
+    public function getFirstActiveChild()
     {
         if($this->active) {
             foreach($this->children as $child) {
@@ -162,34 +172,139 @@ class Node {
     }
 
     /**
-     * @param $key
-     * @param null $default
-     * @return null
-     */
-    public function get($key, $default = null)
-    {
-        if(isset($this->options[$key])){
-            return $this->options[$key];
-        }
-
-        return $default;
-    }
-
-    /**
-     * @param $key
-     * @param $value
-     */
-    public function set($key, $value)
-    {
-        $this->options[$key] = $value;
-    }
-
-    /**
      * @return mixed
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param array $additionalActiveRoutes
+     * @return $this
+     */
+    public function setAdditionalActiveRoutes(array $additionalActiveRoutes)
+    {
+        $this->additionalActiveRoutes = $additionalActiveRoutes;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalActiveRoutes()
+    {
+        return $this->additionalActiveRoutes;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     * @return $this
+     */
+    public function setAttr($key, $value)
+    {
+        $this->attr[$key] = $value;
+
+        return  $this;
+    }
+
+    /**
+     * @param $key
+     * @return null
+     */
+    public function getAttr($key)
+    {
+        if(isset($this->attr[$key])) {
+            return $this->attr[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttrs()
+    {
+        return $this->attr;
+    }
+
+    /**
+     * @param $label
+     * @return $this
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param array $requiredRoles
+     * @return $this
+     */
+    public function setRequiredRoles(array $requiredRoles)
+    {
+        $this->requiredRoles = $requiredRoles;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequiredRoles()
+    {
+        return $this->requiredRoles;
+    }
+
+    /**
+     * @param string $route
+     * @return $this
+     */
+    public function setRoute($route)
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * @param array $routeParams
+     * @return $this
+     */
+    public function setRouteParams(array $routeParams)
+    {
+        $this->routeParams = $routeParams;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRouteParams()
+    {
+        return $this->routeParams;
     }
 
     /**
@@ -205,7 +320,15 @@ class Node {
      */
     public function hasRoute()
     {
-        return $this->get('route') !== null;
+        return $this->getRoute() !== null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllActiveRoutes()
+    {
+        return array_merge(array($this->getRoute()), $this->getAdditionalActiveRoutes());
     }
 
     /**
@@ -222,36 +345,15 @@ class Node {
     }
 
     /**
-     * @return array|null
-     */
-    protected function getRouteAndParamsOrNull()
-    {
-        if($this->get('route') !== null) {
-            return array(
-                'route' => $this->get('route'),
-                'route_params' => $this->get('route_params'),
-            );
-        }
-
-        return null;
-    }
-
-    /**
-     * will check this node and its direct children nodes and return first route information that is found
+     * returns first child node with route
      *
-     * array('route' => '...', 'route_params' => array(...))
-     *
-     * @return array|null
+     * @return $this|null
      */
-    public function getFirstRouteAndParams()
+    public function getFirstChildWithRoute()
     {
-        if($routeInfo = $this->getRouteAndParamsOrNull()) {
-            return $routeInfo;
-        }
-
         foreach($this->children as $child) {
-            if($routeInfo = $child->getRouteAndParamsOrNull()) {
-                return $routeInfo;
+            if($child->hasRoute()) {
+                return $child;
             }
         }
 

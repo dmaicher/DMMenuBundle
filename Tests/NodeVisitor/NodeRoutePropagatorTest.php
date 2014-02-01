@@ -34,12 +34,12 @@ class NodeRoutePropagatorTest extends \PHPUnit_Framework_TestCase {
      */
     public function testVisit($childRoute, $parentRoute, $expectedParentRoute)
     {
-        $this->node->set('route', $childRoute);
-        $this->parent->set('route', $parentRoute);
+        $this->node->setRoute( $childRoute);
+        $this->parent->setRoute($parentRoute);
 
         $this->propagator->visit($this->node);
 
-        $this->assertEquals($expectedParentRoute, $this->parent->get('route'));
+        $this->assertEquals($expectedParentRoute, $this->parent->getRoute());
     }
 
     public function getTestData()

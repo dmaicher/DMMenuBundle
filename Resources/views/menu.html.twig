@@ -1,6 +1,6 @@
 {% block render_children_nodes %}
     {% if currentNode.getChildren()|length > 0 %}
-        {% set activeChild = currentNode.getActiveChild() %}
+        {% set activeChild = currentNode.getFirstActiveChild() %}
 
         <ul{{ block('render_list_attr') }}>
             {% for child in currentNode.getChildren() %}
@@ -43,8 +43,8 @@
         {% set classes = classes|merge(['menu-item-first']) %}
     {% endif %}
 
-    {% set finalClasses = classes|merge(currentNode.get('attr')['class']|default('')|split(' ')) %}
-    {% set viewAttributes = currentNode.get('attr')|merge({'class':finalClasses|join(' ')}) %}
+    {% set finalClasses = classes|merge(currentNode.getAttrs()['class']|default('')|split(' ')) %}
+    {% set viewAttributes = currentNode.getAttrs()|merge({'class':finalClasses|join(' ')}) %}
 
     {%- for key, val in viewAttributes -%}
         {{- " " -}}{{- key }}="{{ val }}"
@@ -52,13 +52,13 @@
 {% endblock %}
 
 {% block render_label %}
-    {{ currentNode.get('label')|trans }}
+    {{ currentNode.getLabel()|trans }}
 {% endblock %}
 
 {% block render_item_inner %}
     {% set url = "" %}
-    {% if currentNode.get('route') %}
-        {% set url = path(currentNode.get('route'), currentNode.get('route_params')) %}
+    {% if currentNode.hasRoute() %}
+        {% set url = path(currentNode.getRoute(), currentNode.getRouteParams()) %}
     {% endif %}
     <a href="{{ url }}">{{ block('render_label') }}</a>
 {% endblock %}

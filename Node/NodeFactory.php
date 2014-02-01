@@ -3,11 +3,11 @@ namespace DM\MenuBundle\Node;
 
 class NodeFactory implements NodeFactoryInterface {
     /**
+     * @param $label
      * @return Node
      */
-    public function create($label, array $options = array())
+    public function create($label = null)
     {
-        $options['label'] = $label;
-        return new Node($options);
+        return new Node($label);
     }
 } 

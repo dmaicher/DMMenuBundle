@@ -32,7 +32,7 @@ class NodeFilter implements NodeVisitorInterface {
      */
     public function visit(Node $node)
     {
-        foreach($node->get('required_roles') as $role) {
+        foreach($node->getRequiredRoles() as $role) {
             if(!$this->securityContext->getToken() || !$this->securityContext->isGranted($role)) {
                 $node->getParent()->removeChild($node);
                 return MenuTreeTraverserInterface::STOP_TRAVERSAL;

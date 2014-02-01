@@ -40,9 +40,10 @@ class NodeActivatorTest extends \PHPUnit_Framework_TestCase {
      * @param $requestRoute
      * @param $expectedIsActive
      */
-    public function testVisit(array $routes, $requestRoute, $expectedIsActive)
+    public function testVisit($route, array $routes, $requestRoute, $expectedIsActive)
     {
-        $this->node->set('additional_active_routes', $routes);
+        $this->node->setRoute($route);
+        $this->node->setAdditionalActiveRoutes($routes);
 
         $this->request
             ->expects($this->any())
@@ -59,10 +60,10 @@ class NodeActivatorTest extends \PHPUnit_Framework_TestCase {
     public function getTestData()
     {
         return array(
-            array(array(), 'some_route', false),
-            array(array('some_route', 'some_other_route'), 'some_different_route', false),
-            array(array('some_route'), 'some_route', true),
-            array(array('some_route', 'some_other_route'), 'some_other_route', true)
+            array(null, array(), 'some_route', false),
+            array('some_route', array('some_other_route'), 'some_different_route', false),
+            array('some_route', array(), 'some_route', true),
+            array('some_route', array('some_other_route'), 'some_other_route', true)
         );
     }
 } 

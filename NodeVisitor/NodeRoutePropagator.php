@@ -17,9 +17,10 @@ class NodeRoutePropagator implements NodeVisitorInterface {
      */
     public function visit(Node $node)
     {
-        if($node->getParent() && $node->get('route') !== null && $node->getParent()->get('route') === null) {
-            $node->getParent()->set('route', $node->get('route'));
-            $node->getParent()->set('route_params', $node->get('route_params'));
+        $parent = $node->getParent();
+        if($parent && $node->hasRoute() && !$parent->hasRoute()) {
+            $parent->setRoute($node->getRoute());
+            $parent->setRouteParams($node->getRouteParams());
         }
     }
 } 

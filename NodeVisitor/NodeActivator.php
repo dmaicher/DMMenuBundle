@@ -35,10 +35,7 @@ class NodeActivator implements NodeVisitorInterface {
             return;
         }
 
-        if(in_array(
-            $this->request->get('_route'),
-            array_merge(array($node->get('route')), $node->get('additional_active_routes')))
-        ) {
+        if(in_array($this->request->get('_route'), $node->getAllActiveRoutes())) {
             $node->setActive(true);
         }
     }
