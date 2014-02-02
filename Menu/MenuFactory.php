@@ -1,6 +1,7 @@
 <?php
 namespace DM\MenuBundle\Menu;
 
+use DM\MenuBundle\MenuConfig\MenuConfigProvider;
 use DM\MenuBundle\MenuTree\MenuTreeBuilderInterface;
 use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
 use DM\MenuBundle\Node\Node;
@@ -9,9 +10,9 @@ use DM\MenuBundle\Node\NodeFactoryInterface;
 class MenuFactory implements MenuFactoryInterface {
 
     /**
-     * @var MenuDefinitionHolder
+     * @var MenuConfigProvider
      */
-    protected $menuDefinitionHolder;
+    protected $menuConfigProvider;
 
     /**
      * @var MenuTreeTraverserInterface
@@ -24,12 +25,12 @@ class MenuFactory implements MenuFactoryInterface {
     protected $cache = array();
 
     /**
-     * @param MenuDefinitionHolder $menuDefinitionHolder
+     * @param MenuConfigProvider $menuConfigProvider
      * @param MenuTreeTraverserInterface $menuTreeTraverser
      */
-    public function __construct(MenuDefinitionHolder $menuDefinitionHolder, MenuTreeTraverserInterface $menuTreeTraverser)
+    public function __construct(MenuConfigProvider $menuConfigProvider, MenuTreeTraverserInterface $menuTreeTraverser)
     {
-        $this->menuDefinitionHolder = $menuDefinitionHolder;
+        $this->menuConfigProvider = $menuConfigProvider;
         $this->menuTreeTraverser = $menuTreeTraverser;
     }
 
@@ -45,9 +46,9 @@ class MenuFactory implements MenuFactoryInterface {
             return $this->cache[$name];
         }
 
-        $menuDefinition = $this->menuDefinitionHolder->getMenuDefinition($name);
+        $menuConfig = $this->menuConfigProvider->getMenuConfig($name);
 
-        $root = $this->getRootNode($menuDefinition['node_factory'], $menuDefinition['tree_builder']);
+        $root = $this->getRootNode($menuConfig['node_factory'], $menuConfig['tree_builder']);
 
         $this->menuTreeTraverser->traverse($root);
 

@@ -9,7 +9,7 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
 
     protected $treeBuilder;
 
-    protected $menuDefinitionHolder;
+    protected $menuConfigProvider;
 
     protected $menuTreeTraverser;
 
@@ -28,15 +28,15 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
             ->getMock('DM\MenuBundle\MenuTree\MenuTreeBuilderInterface')
         ;
 
-        $this->menuDefinitionHolder = $this
-            ->getMock('DM\MenuBundle\Menu\MenuDefinitionHolder')
+        $this->menuConfigProvider = $this
+            ->getMock('DM\MenuBundle\MenuConfig\MenuConfigProvider')
         ;
 
         $this->menuTreeTraverser = $this
             ->getMock('DM\MenuBundle\MenuTree\MenuTreeTraverserInterface')
         ;
 
-        $this->menuFactory = new MenuFactory($this->menuDefinitionHolder, $this->menuTreeTraverser);
+        $this->menuFactory = new MenuFactory($this->menuConfigProvider, $this->menuTreeTraverser);
     }
 
     public function testCreate()
@@ -49,9 +49,9 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
             ->will($this->returnValue($node))
         ;
 
-        $this->menuDefinitionHolder
+        $this->menuConfigProvider
             ->expects($this->once())
-            ->method('getMenuDefinition')
+            ->method('getMenuConfig')
             ->with('name')
             ->will($this->returnValue(array(
                 'tree_builder' => $this->treeBuilder,

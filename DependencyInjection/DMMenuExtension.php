@@ -24,23 +24,22 @@ class DMMenuExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $processedConfig = $this->processConfiguration($configuration, $configs);
+
+        $globalConfig = array(
+            'node_factory' => $processedConfig['node_factory'],
+            'twig_template' => $processedConfig['twig_template']
+        );
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        //doing it here because somehow ->defaultValue() does not work within prototype node?!
-        $defaultValues = array(
-            'node_factory' => 'dm_menu.node_factory',
-            'twig_template' => 'DMMenuBundle::menu.html.twig'
-        );
+        if(isset($processedConfig['menues'])) {
+            $menuConfigProviderDef = $container->getDefinition('dm_menu.menu_config_provider');
 
-        if(isset($configs[0]['menues'])) {
-            $menuDefHolder = $container->getDefinition('dm_menu.menu_definition_holder');
+            foreach($processedConfig['menues'] as $name => $menuConfig) {
 
-            foreach($configs[0]['menues'] as $name => &$menuConfig) {
-
-                $menuConfig = array_merge($defaultValues, $menuConfig);
+                $menuConfig = array_merge($globalConfig, $menuConfig);
 
                 $menuConfig['tree_builder'] = $this->getReferenceFromConfigValue(
                     $container,
@@ -54,12 +53,14 @@ class DMMenuExtension extends Extension
                     $menuConfig['node_factory']
                 );
 
-                $menuDefHolder->addMethodCall('addMenuDefinition', array($name, $menuConfig));
+                $menuConfigProviderDef->addMethodCall('addMenuConfig', array($name, $menuConfig));
             }
         }
     }
 
     /**
+     * @param ContainerBuilder $container
+     * @param $prefix
      * @param $value
      * @return Reference
      */

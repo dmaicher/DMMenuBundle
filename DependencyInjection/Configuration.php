@@ -21,7 +21,10 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('dm_menu');
 
         $rootNode
+            ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('node_factory')->defaultValue('dm_menu.node_factory')->end()
+                ->scalarNode('twig_template')->defaultValue('DMMenuBundle::menu.html.twig')->end()
                 ->arrayNode('menues')
                     ->requiresAtLeastOneElement()
                     ->prototype('array')
@@ -33,7 +36,6 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
-
 
         return $treeBuilder;
     }
