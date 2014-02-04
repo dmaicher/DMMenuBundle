@@ -8,6 +8,9 @@ class NodeFactory implements NodeFactoryInterface {
      */
     public function create($label = null)
     {
-        return new Node($label);
+        $node = new Node($label);
+        $node->setNodeFactory($this);
+
+        return $node;
     }
 } 

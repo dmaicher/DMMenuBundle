@@ -66,7 +66,7 @@ class MenuFactory implements MenuFactoryInterface {
     protected function getRootNode(NodeFactoryInterface $nodeFactory, MenuTreeBuilderInterface $menuTreeBuilder)
     {
         $root = $nodeFactory->create(null);
-        $menuTreeBuilder->buildTree($root, $nodeFactory);
+        $menuTreeBuilder->build($root);
 
         return $root;
     }

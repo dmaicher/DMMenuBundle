@@ -41,7 +41,9 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
 
     public function testCreate()
     {
-        $node = $this->getMock('DM\MenuBundle\Node\Node');
+        $node = $this->getMockBuilder('DM\MenuBundle\Node\Node')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->nodeFactory
             ->expects($this->once())
@@ -67,8 +69,8 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
 
         $this->treeBuilder
             ->expects($this->once())
-            ->method('buildTree')
-            ->with($node, $this->nodeFactory)
+            ->method('build')
+            ->with($node)
         ;
 
         $this->menuFactory->create('name');

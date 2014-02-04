@@ -14,6 +14,11 @@ class Node {
     protected $id;
 
     /**
+     * @var NodeFactoryInterface
+     */
+    protected $nodeFactory;
+
+    /**
      * @var string
      */
     protected $label;
@@ -58,8 +63,8 @@ class Node {
      */
     protected $active = false;
 
-    /**
-     * @param $label
+     /**
+     * @param null $label
      */
     public function __construct($label = null)
     {
@@ -96,6 +101,32 @@ class Node {
         $child->setParent($this);
 
         return $this;
+    }
+
+    /**
+     * @param null $label
+     * @return Node
+     * @throws \BadMethodCallException
+     */
+    public function child($label = null)
+    {
+        if(!$this->nodeFactory) {
+            throw new \BadMethodCallException("nodeFactory needs to be set on this node to be able
+                to use shortcut ->child() for adding a child node");
+        }
+
+        $child = $this->nodeFactory->create($label);
+        $this->addChild($child);
+
+        return $child;
+    }
+
+    /**
+     * @return Node
+     */
+    public function end()
+    {
+        return $this->parent;
     }
 
     /**
@@ -358,5 +389,21 @@ class Node {
         }
 
         return null;
+    }
+
+    /**
+     * @param \DM\MenuBundle\Node\NodeFactoryInterface $nodeFactory
+     */
+    public function setNodeFactory(NodeFactoryInterface $nodeFactory)
+    {
+        $this->nodeFactory = $nodeFactory;
+    }
+
+    /**
+     * @return \DM\MenuBundle\Node\NodeFactoryInterface
+     */
+    public function getNodeFactory()
+    {
+        return $this->nodeFactory;
     }
 } 
