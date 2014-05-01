@@ -14,7 +14,6 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertCount(1, $node->getChildren());
         $this->assertSame($node, $child->getParent());
-        $this->assertSame($node, $child->getParent());
     }
 
     public function testRemoveChild()
