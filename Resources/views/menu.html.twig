@@ -59,6 +59,8 @@
     {% set url = "" %}
     {% if currentNode.hasRoute() %}
         {% set url = path(currentNode.getRoute(), currentNode.getRouteParams()) %}
+    {% elseif currentNode.hasUrl() %}
+        {% set url = currentNode.getUrl() %}
     {% endif %}
     <a href="{{ url }}">{{ block('render_label') }}</a>
 {% endblock %}

@@ -26,6 +26,11 @@ class Node {
     /**
      * @var string
      */
+    protected $url;
+
+    /**
+     * @var string
+     */
     protected $route;
 
     /**
@@ -301,11 +306,16 @@ class Node {
     }
 
     /**
-     * @param string $route
+     * @param $route
      * @return $this
+     * @throws \LogicException
      */
     public function setRoute($route)
     {
+        if($this->url != null) {
+            throw new \LogicException("You can either set a url OR a route, but not both!");
+        }
+
         $this->route = $route;
 
         return $this;
@@ -378,7 +388,7 @@ class Node {
     /**
      * returns first child node with route
      *
-     * @return $this|null
+     * @return Node|null
      */
     public function getFirstChildWithRoute()
     {
@@ -405,5 +415,37 @@ class Node {
     public function getNodeFactory()
     {
         return $this->nodeFactory;
+    }
+
+    /**
+     * @param $url
+     * @return $this
+     * @throws \LogicException
+     */
+    public function setUrl($url)
+    {
+        if($this->route != null) {
+            throw new \LogicException("You can either set a url OR a route, but not both!");
+        }
+
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasUrl()
+    {
+        return $this->url !== null;
     }
 } 
