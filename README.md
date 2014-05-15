@@ -8,22 +8,26 @@ Step 1: create MenuTreeBuilder
 
     class MainMenuTreeBuilder implements MenuTreeBuilderInterface {
     
-        public function buildTree(Node $root, NodeFactoryInterface $factory)
+        public function buildTree(Node $root)
         {
-            $root->addChild($factory->create('some_label_a', [
-                'route' => 'some_route_a',
-                'attr' => ['id' => 'some_id_a'],
-                'required_roles' => ['ROLE_NECESSARY_A']
-            ]))
-            ->addChild($factory->create('some_label_b', [
-                'route' => 'some_route_b',
-                'attr' => ['id' => 'some_id_b'],
-                'required_roles' => ['ROLE_NECESSARY_B']
-            ]))
-            ->addChild($factory->create('some_label_c', [
-                'route' => 'some_route_c',
-                'additional_active_routes' => ['another_route']
-            ]));
+            $root
+                ->child('social_media')
+                    ->setAttr('id', 'main_menu_socialMedia')
+                    ->setRequiredRoles(['ROLE_SOCIAL_MENU'])
+                    ->child('stream')
+                        ->setRoute('_social_media_stream')
+                        ->setRequiredRoles(['ROLE_SOCIAL_STREAM'])
+                    ->end()
+                    ->child('update_status')
+                        ->setRoute('_social_media_update_status')
+                        ->setRequiredRoles(['ROLE_SOCIAL_UPDATE_STATUS'])
+                    ->end()
+                    ->child('statistics')
+                        ->setRoute('_social_media_statistics')
+                        ->setRequiredRoles(['ROLE_SOCIAL_STATS'])
+                    ->end()
+                ->end()
+            ;
         }
     }
     
