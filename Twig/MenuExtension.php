@@ -2,6 +2,7 @@
 namespace DM\MenuBundle\Twig;
 
 use DM\MenuBundle\Menu\MenuFactoryInterface;
+use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\MenuConfig\MenuConfigProvider;
 
 class MenuExtension extends \Twig_Extension {
@@ -33,7 +34,8 @@ class MenuExtension extends \Twig_Extension {
     public function getFunctions()
     {
         return array(
-            'dm_menu_render' => new \Twig_Function_Method($this, 'render', array('is_safe' => array('html')))
+            'dm_menu_render' => new \Twig_Function_Method($this, 'render', array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('dm_menu_section_label', array($this, 'getMenuSectionLabel'))
         );
     }
 
@@ -55,6 +57,17 @@ class MenuExtension extends \Twig_Extension {
         $finalOptions['currentNode'] = $menu;
 
         return $this->getTemplate($name)->renderBlock('render_root', $finalOptions);
+    }
+
+    /**
+     * Get menu section label by name
+     * @param $name
+     * @return string
+     */
+    public function getMenuSectionLabel($name)
+    {
+        $menu = $this->menuFactory->create($name);
+        return $menu ? $menu->getFirstActiveChild()->getLabel() : '';
     }
 
     /**
