@@ -12,9 +12,6 @@ class MenuExtension extends \Twig_Extension {
      */
     private $menuFactory;
 
-    /** @var array */
-    private $cache = array();
-
     /**
      * @var \Twig_Environment
      */
@@ -49,7 +46,7 @@ class MenuExtension extends \Twig_Extension {
      */
     public function render($name, array $options = array())
     {
-        $menu = $this->getMenuByName($name);
+        $menu = $this->menuFactory->create($name);
 
         $defaultOptions = array(
             'collapse' => false,
@@ -69,21 +66,8 @@ class MenuExtension extends \Twig_Extension {
      */
     public function getMenuSectionLabel($name)
     {
-        $menu = $this->getMenuByName($name);
+        $menu = $this->menuFactory->create($name);
         return $menu ? $menu->getFirstActiveChild()->getLabel() : '';
-    }
-
-    /**
-     * Cache menus by name
-     * @param $name
-     * @return mixed
-     */
-    private function getMenuByName($name)
-    {
-        if (!isset($this->cache[$name])) {
-            $this->cache[$name] = $this->menuFactory->create($name);
-        }
-        return $this->cache[$name];
     }
 
     /**
