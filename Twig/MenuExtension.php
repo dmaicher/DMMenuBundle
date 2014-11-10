@@ -67,7 +67,9 @@ class MenuExtension extends \Twig_Extension {
     public function getMenuSectionLabel($name)
     {
         $menu = $this->menuFactory->create($name);
-        return $menu ? $menu->getFirstActiveChild()->getLabel() : '';
+        $activeChild = $menu ? $menu->getFirstActiveChild() : null;
+        // even if menu exists, it may not have an active node
+        return null === $activeChild ? '' : $menu->getFirstActiveChild()->getLabel();
     }
 
     /**
