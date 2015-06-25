@@ -1,8 +1,10 @@
 <?php
+
 namespace DM\MenuBundle\MenuTree;
 
 use DM\MenuBundle\Node\Node;
 
-interface MenuTreeBuilderInterface {
+interface MenuTreeBuilderInterface
+{
     public function build(Node $root);
-} 
+}

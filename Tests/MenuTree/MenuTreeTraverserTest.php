@@ -1,13 +1,13 @@
 <?php
-namespace DM\MenuBundle\Tests\MenuTree;
 
+namespace DM\MenuBundle\Tests\MenuTree;
 
 use DM\MenuBundle\MenuTree\MenuTreeTraverser;
 use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
 use DM\MenuBundle\Node\Node;
 
-class MenuTreeTraverserTest extends \PHPUnit_Framework_TestCase {
-
+class MenuTreeTraverserTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var MenuTreeTraverser
      */
@@ -34,7 +34,7 @@ class MenuTreeTraverserTest extends \PHPUnit_Framework_TestCase {
         $child = new Node();
         $root->addChild($child);
 
-        foreach($this->visitors as $visitor) {
+        foreach ($this->visitors as $visitor) {
             $visitor->expects($this->once())->method('visit')->with($child);
         }
 
@@ -70,11 +70,11 @@ class MenuTreeTraverserTest extends \PHPUnit_Framework_TestCase {
         $child->addChild($childChild);
         $root->addChild($child);
 
-        foreach($this->visitors as $visitor) {
+        foreach ($this->visitors as $visitor) {
             $visitor->expects($this->exactly(2))->method('visit');
             $visitor->expects($this->exactly(2))->method('visit');
         }
 
         $this->traverser->traverse($root);
     }
-} 
+}

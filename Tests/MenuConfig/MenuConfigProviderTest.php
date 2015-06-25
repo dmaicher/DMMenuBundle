@@ -1,10 +1,11 @@
 <?php
+
 namespace DM\MenuBundle\Tests\MenuConfig;
 
 use DM\MenuBundle\MenuConfig\MenuConfigProvider;
 
-class MenuConfigProviderTest extends \PHPUnit_Framework_TestCase {
-
+class MenuConfigProviderTest extends \PHPUnit_Framework_TestCase
+{
     public function testAddMenuDefinitionAndGetMenuDefinition()
     {
         $provider = new MenuConfigProvider();
@@ -22,5 +23,4 @@ class MenuConfigProviderTest extends \PHPUnit_Framework_TestCase {
         $provider = new MenuConfigProvider();
         $provider->getMenuConfig('some_not_existing_name');
     }
-
-} 
+}

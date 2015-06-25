@@ -1,19 +1,18 @@
 <?php
-namespace DM\MenuBundle\Tests\Node;
 
+namespace DM\MenuBundle\Tests\Node;
 
 use DM\MenuBundle\Node\NodeFactory;
 
-class NodeFactoryTest extends \PHPUnit_Framework_TestCase {
-
+class NodeFactoryTest extends \PHPUnit_Framework_TestCase
+{
     public function testCreate()
     {
         $factory = new NodeFactory();
 
-        $node = $factory->create("label");
+        $node = $factory->create('label');
 
         $this->assertInstanceOf('DM\MenuBundle\Node\Node', $node);
-        $this->assertSame("label", $node->getLabel());
+        $this->assertSame('label', $node->getLabel());
     }
-
-} 
+}

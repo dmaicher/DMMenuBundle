@@ -30,7 +30,7 @@ services:
 
   dm_menu.node_visitor.filter:
     class: %dm_menu.node_visitor.filter.class%
-    arguments: [@security.context]
+    arguments: [@security.token_storage, @security.authorization_checker]
     tags:
       - { name: dm_menu.node_visitor, priority: 1 }
 

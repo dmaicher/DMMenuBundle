@@ -1,10 +1,11 @@
 <?php
+
 namespace DM\MenuBundle\MenuTree;
 
 use DM\MenuBundle\Node\Node;
 
-interface MenuTreeTraverserInterface {
-
+interface MenuTreeTraverserInterface
+{
     /**
      * Indicates that traversal on current path should be stopped. So no further traversal below current node.
      */
@@ -12,7 +13,8 @@ interface MenuTreeTraverserInterface {
 
     /**
      * @param Node $root
+     *
      * @return mixed
      */
     public function traverse(Node $node);
-} 
+}

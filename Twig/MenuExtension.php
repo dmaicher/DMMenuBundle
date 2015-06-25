@@ -1,12 +1,13 @@
 <?php
+
 namespace DM\MenuBundle\Twig;
 
 use DM\MenuBundle\Menu\MenuFactoryInterface;
 use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\MenuConfig\MenuConfigProvider;
 
-class MenuExtension extends \Twig_Extension {
-
+class MenuExtension extends \Twig_Extension
+{
     /**
      * @var MenuFactoryInterface
      */
@@ -25,7 +26,7 @@ class MenuExtension extends \Twig_Extension {
     public function __construct(
         MenuFactoryInterface $menuFactory, \Twig_Environment $twig,
         MenuConfigProvider $menuConfigProvider
-    ){
+    ) {
         $this->menuFactory = $menuFactory;
         $this->twig = $twig;
         $this->menuConfigProvider = $menuConfigProvider;
@@ -35,13 +36,14 @@ class MenuExtension extends \Twig_Extension {
     {
         return array(
             'dm_menu_render' => new \Twig_Function_Method($this, 'render', array('is_safe' => array('html'))),
-            new \Twig_SimpleFunction('dm_menu_section_label', array($this, 'getMenuSectionLabel'))
+            new \Twig_SimpleFunction('dm_menu_section_label', array($this, 'getMenuSectionLabel')),
         );
     }
 
     /**
      * @param $name
      * @param array $options
+     *
      * @return mixed
      */
     public function render($name, array $options = array())
@@ -50,9 +52,9 @@ class MenuExtension extends \Twig_Extension {
 
         $defaultOptions = array(
             'collapse' => false,
-            'nested' => true
+            'nested' => true,
         );
-        
+
         $finalOptions = array_merge($defaultOptions, $options);
         $finalOptions['currentNode'] = $menu;
 
@@ -60,8 +62,10 @@ class MenuExtension extends \Twig_Extension {
     }
 
     /**
-     * Get menu section label by name
+     * Get menu section label by name.
+     *
      * @param $name
+     *
      * @return string
      */
     public function getMenuSectionLabel($name)
@@ -74,6 +78,7 @@ class MenuExtension extends \Twig_Extension {
 
     /**
      * @param $name
+     *
      * @return \Twig_TemplateInterface
      */
     protected function getTemplate($name)
@@ -87,4 +92,4 @@ class MenuExtension extends \Twig_Extension {
     {
         return 'dm_menu_extension';
     }
-} 
+}

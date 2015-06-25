@@ -1,9 +1,12 @@
 <?php
+
 namespace DM\MenuBundle\Node;
 
-class NodeFactory implements NodeFactoryInterface {
+class NodeFactory implements NodeFactoryInterface
+{
     /**
      * @param $label
+     *
      * @return Node
      */
     public function create($label = null)
@@ -13,4 +16,4 @@ class NodeFactory implements NodeFactoryInterface {
 
         return $node;
     }
-} 
+}
