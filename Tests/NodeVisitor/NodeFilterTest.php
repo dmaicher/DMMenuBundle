@@ -4,39 +4,52 @@ namespace DM\MenuBundle\Tests\NodeVisitor;
 use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
 use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\NodeVisitor\NodeFilter;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-class NodeFilterTest extends \PHPUnit_Framework_TestCase {
-
+class NodeFilterTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var NodeFilter
      */
-    protected $filter;
+    private $filter;
 
     /**
-     * @var SecurityContextInterface
+     * @var TokenStorageInterface|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $securityContext;
+    private $tokenStorage;
+
+    /**
+     * @var AuthorizationCheckerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $authChecker;
 
     /**
      * @var Node
      */
-    protected $node;
+    private $node;
 
     /**
-     * @var Node
+     * @var Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected $parent;
+    private $parent;
 
     public function setUp()
     {
-        $this->securityContext = $this
-            ->getMockBuilder('Symfony\Component\Security\Core\SecurityContextInterface')
+        $this->tokenStorage = $this
+            ->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface')
             ->getMock()
         ;
 
-        $this->filter = new NodeFilter($this->securityContext);
+        $this->authChecker = $this
+            ->getMockBuilder('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface')
+            ->getMock()
+        ;
+
+        $this->filter = new NodeFilter($this->tokenStorage, $this->authChecker);
+
         $this->node = new Node();
+
         $this->parent = $this
             ->getMockBuilder('DM\MenuBundle\Node\Node')
             ->getMock()
@@ -57,13 +70,13 @@ class NodeFilterTest extends \PHPUnit_Framework_TestCase {
     {
         $this->node->setRequiredRoles($roles);
 
-        $this->securityContext
+        $this->tokenStorage
             ->expects($this->any())
             ->method('getToken')
             ->will($this->returnValue($getTokenReturn))
         ;
 
-        $this->securityContext
+        $this->authChecker
             ->expects($this->any())
             ->method('isGranted')
             ->will($this->returnValue($isGrantedReturn))
