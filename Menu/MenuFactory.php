@@ -1,4 +1,5 @@
 <?php
+
 namespace DM\MenuBundle\Menu;
 
 use DM\MenuBundle\MenuConfig\MenuConfigProvider;
@@ -7,8 +8,8 @@ use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
 use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\Node\NodeFactoryInterface;
 
-class MenuFactory implements MenuFactoryInterface {
-
+class MenuFactory implements MenuFactoryInterface
+{
     /**
      * @var MenuConfigProvider
      */
@@ -25,7 +26,7 @@ class MenuFactory implements MenuFactoryInterface {
     protected $cache = array();
 
     /**
-     * @param MenuConfigProvider $menuConfigProvider
+     * @param MenuConfigProvider         $menuConfigProvider
      * @param MenuTreeTraverserInterface $menuTreeTraverser
      */
     public function __construct(MenuConfigProvider $menuConfigProvider, MenuTreeTraverserInterface $menuTreeTraverser)
@@ -36,13 +37,15 @@ class MenuFactory implements MenuFactoryInterface {
 
     /**
      * @param $name
+     *
      * @return Node
+     *
      * @throws \InvalidArgumentException
      */
     public function create($name)
     {
         //already created for this request?
-        if(isset($this->cache[$name])) {
+        if (isset($this->cache[$name])) {
             return $this->cache[$name];
         }
 
@@ -59,8 +62,9 @@ class MenuFactory implements MenuFactoryInterface {
     }
 
     /**
-     * @param NodeFactoryInterface $nodeFactory
+     * @param NodeFactoryInterface     $nodeFactory
      * @param MenuTreeBuilderInterface $menuTreeBuilder
+     *
      * @return Node
      */
     protected function getRootNode(NodeFactoryInterface $nodeFactory, MenuTreeBuilderInterface $menuTreeBuilder)

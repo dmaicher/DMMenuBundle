@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
- * This is the class that loads and manages your bundle configuration
+ * This is the class that loads and manages your bundle configuration.
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
@@ -28,17 +28,16 @@ class DMMenuExtension extends Extension
 
         $globalConfig = array(
             'node_factory' => $processedConfig['node_factory'],
-            'twig_template' => $processedConfig['twig_template']
+            'twig_template' => $processedConfig['twig_template'],
         );
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        if(isset($processedConfig['menues'])) {
+        if (isset($processedConfig['menues'])) {
             $menuConfigProviderDef = $container->getDefinition('dm_menu.menu_config_provider');
 
-            foreach($processedConfig['menues'] as $name => $menuConfig) {
-
+            foreach ($processedConfig['menues'] as $name => $menuConfig) {
                 $menuConfig = array_merge($globalConfig, $menuConfig);
 
                 $menuConfig['tree_builder'] = $this->getReferenceFromConfigValue(
@@ -62,16 +61,17 @@ class DMMenuExtension extends Extension
      * @param ContainerBuilder $container
      * @param $prefix
      * @param $value
+     *
      * @return Reference
      */
     protected function getReferenceFromConfigValue(ContainerBuilder $container, $prefix, $value)
     {
-        if(class_exists($value)) {
+        if (class_exists($value)) {
             $id = $prefix.md5($value);
             $container->register($id, $value);
+
             return new Reference($id);
-        }
-        else{
+        } else {
             return new Reference($value);
         }
     }

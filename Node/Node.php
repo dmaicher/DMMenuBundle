@@ -1,8 +1,9 @@
 <?php
+
 namespace DM\MenuBundle\Node;
 
-class Node {
-
+class Node
+{
     /**
      * @var int
      */
@@ -64,11 +65,11 @@ class Node {
     protected $children = array();
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $active = false;
 
-     /**
+    /**
      * @param null $label
      */
     public function __construct($label = null)
@@ -79,6 +80,7 @@ class Node {
 
     /**
      * @param Node $parent
+     *
      * @return $this
      */
     public function setParent(Node $parent = null)
@@ -98,6 +100,7 @@ class Node {
 
     /**
      * @param Node $child
+     *
      * @return $this
      */
     public function addChild(Node $child)
@@ -110,14 +113,16 @@ class Node {
 
     /**
      * @param null $label
+     *
      * @return Node
+     *
      * @throws \BadMethodCallException
      */
     public function child($label = null)
     {
-        if(!$this->nodeFactory) {
-            throw new \BadMethodCallException("nodeFactory needs to be set on this node to be able
-                to use shortcut ->child() for adding a child node");
+        if (!$this->nodeFactory) {
+            throw new \BadMethodCallException('nodeFactory needs to be set on this node to be able
+                to use shortcut ->child() for adding a child node');
         }
 
         $child = $this->nodeFactory->create($label);
@@ -139,7 +144,7 @@ class Node {
      */
     public function removeChild(Node $child)
     {
-        if(isset($this->children[$child->getId()])) {
+        if (isset($this->children[$child->getId()])) {
             unset($this->children[$child->getId()]);
             $child->setParent(null);
         }
@@ -156,11 +161,12 @@ class Node {
     /**
      * returns the layer of this node in the menu tree.
      * Root node has layer 0. So for actual menu nodes the layer starts with 1.
+     *
      * @return int
      */
     public function getLayer()
     {
-        if($this->parent) {
+        if ($this->parent) {
             return $this->parent->getLayer() + 1;
         }
 
@@ -169,13 +175,14 @@ class Node {
 
     /**
      * @param $active
+     *
      * @return $this
      */
     public function setActive($active)
     {
         $this->active = $active;
 
-        if($this->parent && $active) {
+        if ($this->parent && $active) {
             $this->parent->setActive(true);
         }
 
@@ -183,7 +190,7 @@ class Node {
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isActive()
     {
@@ -191,20 +198,21 @@ class Node {
     }
 
     /**
-     * returns the first active child
+     * returns the first active child.
+     *
      * @return Node|null
      */
     public function getFirstActiveChild()
     {
-        if($this->active) {
-            foreach($this->children as $child) {
-                if($child->isActive()) {
+        if ($this->active) {
+            foreach ($this->children as $child) {
+                if ($child->isActive()) {
                     return $child;
                 }
             }
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -217,6 +225,7 @@ class Node {
 
     /**
      * @param array $additionalActiveRoutes
+     *
      * @return $this
      */
     public function setAdditionalActiveRoutes(array $additionalActiveRoutes)
@@ -237,6 +246,7 @@ class Node {
     /**
      * @param $key
      * @param $value
+     *
      * @return $this
      */
     public function setAttr($key, $value)
@@ -248,15 +258,14 @@ class Node {
 
     /**
      * @param $key
-     * @return null
      */
     public function getAttr($key)
     {
-        if(isset($this->attr[$key])) {
+        if (isset($this->attr[$key])) {
             return $this->attr[$key];
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -269,6 +278,7 @@ class Node {
 
     /**
      * @param $label
+     *
      * @return $this
      */
     public function setLabel($label)
@@ -288,6 +298,7 @@ class Node {
 
     /**
      * @param array $requiredRoles
+     *
      * @return $this
      */
     public function setRequiredRoles(array $requiredRoles)
@@ -307,13 +318,15 @@ class Node {
 
     /**
      * @param $route
+     *
      * @return $this
+     *
      * @throws \LogicException
      */
     public function setRoute($route)
     {
-        if($this->url != null) {
-            throw new \LogicException("You can either set a url OR a route, but not both!");
+        if ($this->url != null) {
+            throw new \LogicException('You can either set a url OR a route, but not both!');
         }
 
         $this->route = $route;
@@ -331,6 +344,7 @@ class Node {
 
     /**
      * @param array $routeParams
+     *
      * @return $this
      */
     public function setRouteParams(array $routeParams)
@@ -377,8 +391,9 @@ class Node {
      */
     public function isFirstChild()
     {
-        if($this->parent) {
+        if ($this->parent) {
             $children = $this->parent->getChildren();
+
             return $this === reset($children);
         }
 
@@ -386,19 +401,19 @@ class Node {
     }
 
     /**
-     * returns first child node with route
+     * returns first child node with route.
      *
      * @return Node|null
      */
     public function getFirstChildWithRoute()
     {
-        foreach($this->children as $child) {
-            if($child->hasRoute()) {
+        foreach ($this->children as $child) {
+            if ($child->hasRoute()) {
                 return $child;
             }
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -419,13 +434,15 @@ class Node {
 
     /**
      * @param $url
+     *
      * @return $this
+     *
      * @throws \LogicException
      */
     public function setUrl($url)
     {
-        if($this->route != null) {
-            throw new \LogicException("You can either set a url OR a route, but not both!");
+        if ($this->route != null) {
+            throw new \LogicException('You can either set a url OR a route, but not both!');
         }
 
         $this->url = $url;
@@ -448,4 +465,4 @@ class Node {
     {
         return $this->url !== null;
     }
-} 
+}

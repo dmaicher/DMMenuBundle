@@ -1,6 +1,6 @@
 <?php
-namespace DM\MenuBundle\DependencyInjection\CompilerPass;
 
+namespace DM\MenuBundle\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -22,7 +22,7 @@ class NodeVisitorCompilerPass implements CompilerPassInterface
             'dm_menu.node_visitor'
         );
 
-        uksort($taggedServices, function($i, $j) use ($taggedServices){
+        uksort($taggedServices, function ($i, $j) use ($taggedServices) {
             return $taggedServices[$i][0]['priority'] -  $taggedServices[$j][0]['priority'];
         });
 
@@ -33,4 +33,4 @@ class NodeVisitorCompilerPass implements CompilerPassInterface
             );
         }
     }
-} 
+}

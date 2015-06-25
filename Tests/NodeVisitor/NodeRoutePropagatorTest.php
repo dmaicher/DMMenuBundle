@@ -1,11 +1,12 @@
 <?php
+
 namespace DM\MenuBundle\Tests\NodeVisitor;
 
 use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\NodeVisitor\NodeRoutePropagator;
 
-class NodeRoutePropagatorTest extends \PHPUnit_Framework_TestCase {
-
+class NodeRoutePropagatorTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var NodeActivator
      */
@@ -34,7 +35,7 @@ class NodeRoutePropagatorTest extends \PHPUnit_Framework_TestCase {
      */
     public function testVisit($childRoute, $parentRoute, $expectedParentRoute)
     {
-        $this->node->setRoute( $childRoute);
+        $this->node->setRoute($childRoute);
         $this->parent->setRoute($parentRoute);
 
         $this->propagator->visit($this->node);
@@ -50,4 +51,4 @@ class NodeRoutePropagatorTest extends \PHPUnit_Framework_TestCase {
             array('some_route', 'some_other_route', 'some_other_route'),
         );
     }
-} 
+}

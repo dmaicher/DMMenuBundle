@@ -1,4 +1,5 @@
 <?php
+
 namespace DM\MenuBundle\NodeVisitor;
 
 use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
@@ -10,7 +11,6 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  * This visitor will remove the node from the tree if not all necessary permissions are granted by securityContext.
  *
  * Class NodeFilter
- * @package DM\MenuBundle\NodeVisitor
  */
 class NodeFilter implements NodeVisitorInterface
 {
@@ -25,7 +25,7 @@ class NodeFilter implements NodeVisitorInterface
     private $authChecker;
 
     /**
-     * @param TokenStorageInterface $tokenStorage
+     * @param TokenStorageInterface         $tokenStorage
      * @param AuthorizationCheckerInterface $authChecker
      */
     public function __construct(TokenStorageInterface $tokenStorage, AuthorizationCheckerInterface $authChecker)
@@ -36,15 +36,17 @@ class NodeFilter implements NodeVisitorInterface
 
     /**
      * @param Node $node
+     *
      * @return mixed|void
      */
     public function visit(Node $node)
     {
-        foreach($node->getRequiredRoles() as $role) {
-            if(!$this->tokenStorage->getToken() || !$this->authChecker->isGranted($role)) {
+        foreach ($node->getRequiredRoles() as $role) {
+            if (!$this->tokenStorage->getToken() || !$this->authChecker->isGranted($role)) {
                 $node->getParent()->removeChild($node);
+
                 return MenuTreeTraverserInterface::STOP_TRAVERSAL;
             }
         }
     }
-} 
+}

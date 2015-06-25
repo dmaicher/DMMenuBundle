@@ -1,4 +1,5 @@
 <?php
+
 namespace DM\MenuBundle\Tests\NodeVisitor;
 
 use DM\MenuBundle\MenuTree\MenuTreeTraverserInterface;
@@ -82,19 +83,17 @@ class NodeFilterTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($isGrantedReturn))
         ;
 
-        if($expectsFiltered) {
+        if ($expectsFiltered) {
             $this->parent->expects($this->once())->method('removeChild');
-        }
-        else{
+        } else {
             $this->parent->expects($this->never())->method('removeChild');
         }
 
         $return = $this->filter->visit($this->node);
 
-        if($expectsFiltered) {
+        if ($expectsFiltered) {
             $this->assertSame(MenuTreeTraverserInterface::STOP_TRAVERSAL, $return);
-        }
-        else{
+        } else {
             $this->assertNotSame(MenuTreeTraverserInterface::STOP_TRAVERSAL, $return);
         }
     }
@@ -105,7 +104,7 @@ class NodeFilterTest extends \PHPUnit_Framework_TestCase
             array(array(), true, true, false),
             array(array('FOO'), true, true, false),
             array(array('FOO'), true, false, true),
-            array(array('FOO'), false, true, true)
+            array(array('FOO'), false, true, true),
         );
     }
-} 
+}

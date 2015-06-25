@@ -1,12 +1,13 @@
 <?php
+
 namespace DM\MenuBundle\Tests\NodeVisitor;
 
 use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\NodeVisitor\NodeActivator;
 use Symfony\Component\HttpFoundation\Request;
 
-class NodeActivatorTest extends \PHPUnit_Framework_TestCase {
-
+class NodeActivatorTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var NodeActivator
      */
@@ -63,7 +64,7 @@ class NodeActivatorTest extends \PHPUnit_Framework_TestCase {
             array(null, array(), 'some_route', false),
             array('some_route', array('some_other_route'), 'some_different_route', false),
             array('some_route', array(), 'some_route', true),
-            array('some_route', array('some_other_route'), 'some_other_route', true)
+            array('some_route', array('some_other_route'), 'some_other_route', true),
         );
     }
-} 
+}

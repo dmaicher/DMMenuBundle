@@ -1,11 +1,11 @@
 <?php
-namespace DM\MenuBundle\Tests\Node;
 
+namespace DM\MenuBundle\Tests\Node;
 
 use DM\MenuBundle\Node\Node;
 
-class NodeTest extends \PHPUnit_Framework_TestCase {
-
+class NodeTest extends \PHPUnit_Framework_TestCase
+{
     public function testAddChild()
     {
         $node = new Node();
@@ -125,4 +125,4 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($child2, $node->getFirstChildWithRoute());
     }
-} 
+}

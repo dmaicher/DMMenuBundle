@@ -1,10 +1,11 @@
 <?php
+
 namespace DM\MenuBundle\Tests\Menu;
 
 use DM\MenuBundle\Menu\MenuFactory;
 
-class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
-
+class MenuFactoryTest extends \PHPUnit_Framework_TestCase
+{
     protected $nodeFactory;
 
     protected $treeBuilder;
@@ -57,7 +58,7 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
             ->with('name')
             ->will($this->returnValue(array(
                 'tree_builder' => $this->treeBuilder,
-                'node_factory' => $this->nodeFactory
+                'node_factory' => $this->nodeFactory,
             )))
         ;
 
@@ -75,4 +76,4 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase {
 
         $this->menuFactory->create('name');
     }
-} 
+}
