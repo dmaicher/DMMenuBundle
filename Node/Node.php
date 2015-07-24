@@ -448,4 +448,38 @@ class Node {
     {
         return $this->url !== null;
     }
+
+    /**
+     * Get the nesting depth
+     *
+     * @return int
+     */
+    public function getNestingDepth()
+    {
+        return $this->checkNestingDepth($this->getChildren());
+    }
+
+    /**
+     * Calculate the nesting depth
+     *
+     * @param $nodes
+     * @param int $arrayDepth - the nesting depth of the current iteration
+     * @return int - the nesting depth
+     */
+    private function checkNestingDepth($nodes, $arrayDepth = 0)
+    {
+        if (!empty($nodes)) {
+            $arrayDepth++;
+        }
+
+        foreach ($nodes as $node) {
+            $children = $node->getChildren();
+            if (!empty($children)) {
+                $arrayDepth = $this->checkNestingDepth($children, $arrayDepth);
+                break;
+            }
+        }
+
+        return $arrayDepth;
+    }
 } 
