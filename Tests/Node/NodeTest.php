@@ -125,4 +125,17 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame($child2, $node->getFirstChildWithRoute());
     }
+
+    public function testCheckNestingDepth()
+    {
+        $node = new Node();
+        $child1 = new Node();
+        $child2 = new Node();
+
+        $child1->addChild($child2);
+        $node->addChild($child1);
+
+        $this->assertEquals(2, $node->getNestingDepth());
+        $this->assertEquals(1, $child1->getNestingDepth());
+    }
 } 
