@@ -3,7 +3,6 @@
 namespace DM\MenuBundle\Twig;
 
 use DM\MenuBundle\Menu\MenuFactoryInterface;
-use DM\MenuBundle\Node\Node;
 use DM\MenuBundle\MenuConfig\MenuConfigProvider;
 
 class MenuExtension extends \Twig_Extension
@@ -32,6 +31,9 @@ class MenuExtension extends \Twig_Extension
         $this->menuConfigProvider = $menuConfigProvider;
     }
 
+    /**
+     * @return array
+     */
     public function getFunctions()
     {
         return array(
@@ -52,13 +54,19 @@ class MenuExtension extends \Twig_Extension
 
         $defaultOptions = array(
             'collapse' => false,
-            'nested' => true,
+            'nested' => true
         );
 
+        $template = isset($options['template']) ?
+            $this->loadTemplate($options['template']) :
+            $this->loadTemplateFromMenuConfig($name)
+        ;
+
+        unset($options['template']);
         $finalOptions = array_merge($defaultOptions, $options);
         $finalOptions['currentNode'] = $menu;
 
-        return $this->getTemplate($name)->renderBlock('render_root', $finalOptions);
+        return $template->renderBlock('render_root', $finalOptions);
     }
 
     /**
@@ -72,8 +80,19 @@ class MenuExtension extends \Twig_Extension
     {
         $menu = $this->menuFactory->create($name);
         $activeChild = $menu ? $menu->getFirstActiveChild() : null;
+
         // even if menu exists, it may not have an active node
         return null === $activeChild ? '' : $menu->getFirstActiveChild()->getLabel();
+    }
+
+    /**
+     * @param string $templateName
+     *
+     * @return Twig_TemplateInterface
+     */
+    protected function loadTemplate($templateName)
+    {
+        return $this->twig->loadTemplate($templateName);
     }
 
     /**
@@ -81,13 +100,16 @@ class MenuExtension extends \Twig_Extension
      *
      * @return \Twig_TemplateInterface
      */
-    protected function getTemplate($name)
+    protected function loadTemplateFromMenuConfig($name)
     {
         $menuConfig = $this->menuConfigProvider->getMenuConfig($name);
 
-        return $this->twig->loadTemplate($menuConfig['twig_template']);
+        return $this->loadTemplate($menuConfig['twig_template']);
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'dm_menu_extension';
