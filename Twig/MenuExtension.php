@@ -37,6 +37,7 @@ class MenuExtension extends \Twig_Extension
         return array(
             'dm_menu_render' => new \Twig_Function_Method($this, 'render', array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('dm_menu_section_label', array($this, 'getMenuSectionLabel')),
+            new \Twig_SimpleFunction('dm_menu_first_active_child', array($this, 'getFirstActiveChild')),
         );
     }
 
@@ -70,10 +71,21 @@ class MenuExtension extends \Twig_Extension
      */
     public function getMenuSectionLabel($name)
     {
+        $activeChild = $this->getFirstActiveChild($name);
+
+        return null === $activeChild ? '' : $activeChild->getLabel();
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Node
+     */
+    public function getFirstActiveChild($name)
+    {
         $menu = $this->menuFactory->create($name);
-        $activeChild = $menu ? $menu->getFirstActiveChild() : null;
-        // even if menu exists, it may not have an active node
-        return null === $activeChild ? '' : $menu->getFirstActiveChild()->getLabel();
+
+        return $menu ? $menu->getFirstActiveChild() : null;
     }
 
     /**
