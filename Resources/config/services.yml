@@ -36,7 +36,7 @@ services:
 
   dm_menu.node_visitor.activator:
     class: "%dm_menu.node_visitor.activator.class%"
-    arguments: ["@?request="]
+    arguments: ["@request_stack"]
     tags:
       - { name: dm_menu.node_visitor, priority: 2 }
 
