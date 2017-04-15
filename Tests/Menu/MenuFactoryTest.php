@@ -22,19 +22,19 @@ class MenuFactoryTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->nodeFactory = $this
-            ->getMock('DM\MenuBundle\Node\NodeFactoryInterface')
+            ->createMock('DM\MenuBundle\Node\NodeFactoryInterface')
         ;
 
         $this->treeBuilder = $this
-            ->getMock('DM\MenuBundle\MenuTree\MenuTreeBuilderInterface')
+            ->createMock('DM\MenuBundle\MenuTree\MenuTreeBuilderInterface')
         ;
 
         $this->menuConfigProvider = $this
-            ->getMock('DM\MenuBundle\MenuConfig\MenuConfigProvider')
+            ->createMock('DM\MenuBundle\MenuConfig\MenuConfigProvider')
         ;
 
         $this->menuTreeTraverser = $this
-            ->getMock('DM\MenuBundle\MenuTree\MenuTreeTraverserInterface')
+            ->createMock('DM\MenuBundle\MenuTree\MenuTreeTraverserInterface')
         ;
 
         $this->menuFactory = new MenuFactory($this->menuConfigProvider, $this->menuTreeTraverser);
