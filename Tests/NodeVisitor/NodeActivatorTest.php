@@ -9,25 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 class NodeActivatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var NodeActivator
-     */
-    protected $activator;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * @var Node
      */
     protected $node;
 
     public function setUp()
     {
-
-
-
         $this->node = new Node();
     }
 
