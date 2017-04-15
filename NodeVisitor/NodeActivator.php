@@ -18,7 +18,7 @@ class NodeActivator implements NodeVisitorInterface
     protected $request;
 
     /**
-     * @param Request $request
+     * @param RequestStack $request
      */
     public function __construct(RequestStack $requestStack)
     {
