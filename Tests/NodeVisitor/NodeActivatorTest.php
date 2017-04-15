@@ -9,34 +9,19 @@ use Symfony\Component\HttpFoundation\Request;
 class NodeActivatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var NodeActivator
-     */
-    protected $activator;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * @var Node
      */
     protected $node;
 
     public function setUp()
     {
-        $this->request = $this
-            ->getMockBuilder('Symfony\Component\HttpFoundation\Request')
-            ->getMock()
-        ;
-
-        $this->activator = new NodeActivator($this->request);
         $this->node = new Node();
     }
 
     /**
      * @dataProvider getTestData
      *
+     * @param string $route
      * @param array $routes
      * @param $requestRoute
      * @param $expectedIsActive
@@ -45,15 +30,10 @@ class NodeActivatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->node->setRoute($route);
         $this->node->setAdditionalActiveRoutes($routes);
+        $requestStack = $this->getRequestStackMock($requestRoute);
+        $activator = new NodeActivator($requestStack);
 
-        $this->request
-            ->expects($this->any())
-            ->method('get')
-            ->with('_route')
-            ->will($this->returnValue($requestRoute))
-        ;
-
-        $this->activator->visit($this->node);
+        $activator->visit($this->node);
 
         $this->assertEquals($expectedIsActive, $this->node->isActive());
     }
@@ -66,5 +46,16 @@ class NodeActivatorTest extends \PHPUnit_Framework_TestCase
             array('some_route', array(), 'some_route', true),
             array('some_route', array('some_other_route'), 'some_other_route', true),
         );
+    }
+
+    private function getRequestStackMock($requestRoute)
+    {
+        $request = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')->getMock();
+        $request->expects($this->any())->method('get')->with('_route')->will($this->returnValue($requestRoute));
+
+        $requestStack = $this->getMockBuilder('Symfony\Component\HttpFoundation\RequestStack')->getMock();
+        $requestStack->expects($this->any())->method('getCurrentRequest')->will($this->returnValue($request));
+
+        return $requestStack;
     }
 }

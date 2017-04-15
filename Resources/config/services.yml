@@ -10,37 +10,37 @@ parameters:
 
 services:
   dm_menu.twig.menu_extension:
-    class: %dm_menu.twig.menu_extension.class%
-    arguments: [@dm_menu.menu_factory, @twig, @dm_menu.menu_config_provider]
+    class: "%dm_menu.twig.menu_extension.class%"
+    arguments: ["@dm_menu.menu_factory", "@twig", "@dm_menu.menu_config_provider"]
     tags:
       - { name: twig.extension }
 
   dm_menu.node_factory:
-    class: %dm_menu.node_factory.class%
+    class: "%dm_menu.node_factory.class%"
 
   dm_menu.menu_factory:
-    class: %dm_menu.menu_factory.class%
-    arguments: [@dm_menu.menu_config_provider, @dm_menu.menu_tree_traverser]
+    class: "%dm_menu.menu_factory.class%"
+    arguments: ["@dm_menu.menu_config_provider", "@dm_menu.menu_tree_traverser"]
 
   dm_menu.menu_config_provider:
-    class: %dm_menu.menu_config_provider.class%
+    class: "%dm_menu.menu_config_provider.class%"
 
   dm_menu.menu_tree_traverser:
-    class: %dm_menu.menu_tree_traverser.class%
+    class: "%dm_menu.menu_tree_traverser.class%"
 
   dm_menu.node_visitor.filter:
-    class: %dm_menu.node_visitor.filter.class%
-    arguments: [@security.token_storage, @security.authorization_checker]
+    class: "%dm_menu.node_visitor.filter.class%"
+    arguments: ["@security.token_storage", "@security.authorization_checker"]
     tags:
       - { name: dm_menu.node_visitor, priority: 1 }
 
   dm_menu.node_visitor.activator:
-    class: %dm_menu.node_visitor.activator.class%
-    arguments: [@?request=]
+    class: "%dm_menu.node_visitor.activator.class%"
+    arguments: ["@request_stack"]
     tags:
       - { name: dm_menu.node_visitor, priority: 2 }
 
   dm_menu.node_visitor.node_route_propagator:
-      class: %dm_menu.node_visitor.node_route_propagator.class%
+      class: "%dm_menu.node_visitor.node_route_propagator.class%"
       tags:
         - { name: dm_menu.node_visitor, priority: 3 }

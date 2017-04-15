@@ -3,7 +3,7 @@
 namespace DM\MenuBundle\NodeVisitor;
 
 use DM\MenuBundle\Node\Node;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * This visitor will set a node to active if one of its routes matches the current route of the request.
@@ -18,11 +18,11 @@ class NodeActivator implements NodeVisitorInterface
     protected $request;
 
     /**
-     * @param Request $request
+     * @param RequestStack $request
      */
-    public function __construct(Request $request = null)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->request = $request;
+        $this->request = $requestStack->getCurrentRequest();
     }
 
     /**
