@@ -13,16 +13,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class NodeActivator implements NodeVisitorInterface
 {
     /**
-     * @var \Symfony\Component\HttpFoundation\Request
+     * @var RequestStack
      */
-    protected $request;
+    protected $requestStack;
 
-    /**
-     * @param RequestStack $request
-     */
     public function __construct(RequestStack $requestStack)
     {
-        $this->request = $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -32,11 +29,11 @@ class NodeActivator implements NodeVisitorInterface
      */
     public function visit(Node $node)
     {
-        if (!$this->request) {
+        if (!$request = $this->requestStack->getCurrentRequest()) {
             return;
         }
 
-        if (in_array($this->request->get('_route'), $node->getAllActiveRoutes())) {
+        if (in_array($request->get('_route'), $node->getAllActiveRoutes())) {
             $node->setActive(true);
         }
     }
