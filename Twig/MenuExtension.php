@@ -2,36 +2,24 @@
 
 namespace DM\MenuBundle\Twig;
 
-use DM\MenuBundle\Menu\MenuFactoryInterface;
 use DM\MenuBundle\Node\Node;
-use DM\MenuBundle\MenuConfig\MenuConfigProvider;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MenuExtension extends \Twig_Extension
 {
     /**
-     * @var MenuFactoryInterface
+     * @var ContainerInterface
      */
-    private $menuFactory;
+    private $container;
 
-    /**
-     * @var \Twig_Environment
-     */
-    protected $twig;
-
-    /**
-     * @var MenuConfigProvider
-     */
-    protected $menuConfigProvider;
-
-    public function __construct(
-        MenuFactoryInterface $menuFactory, \Twig_Environment $twig,
-        MenuConfigProvider $menuConfigProvider
-    ) {
-        $this->menuFactory = $menuFactory;
-        $this->twig = $twig;
-        $this->menuConfigProvider = $menuConfigProvider;
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
     }
 
+    /**
+     * @return array
+     */
     public function getFunctions()
     {
         return array(
@@ -42,14 +30,14 @@ class MenuExtension extends \Twig_Extension
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param array $options
      *
-     * @return mixed
+     * @return string
      */
     public function render($name, array $options = array())
     {
-        $menu = $this->menuFactory->create($name);
+        $menu = $this->container->get('dm_menu.menu_factory')->create($name);
 
         $defaultOptions = array(
             'collapse' => false,
@@ -63,9 +51,7 @@ class MenuExtension extends \Twig_Extension
     }
 
     /**
-     * Get menu section label by name.
-     *
-     * @param $name
+     * @param string $name
      *
      * @return string
      */
@@ -83,23 +69,26 @@ class MenuExtension extends \Twig_Extension
      */
     public function getFirstActiveChild($name)
     {
-        $menu = $this->menuFactory->create($name);
+        $menu = $this->container->get('dm_menu.menu_factory')->create($name);
 
         return $menu ? $menu->getFirstActiveChild() : null;
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
-     * @return \Twig_TemplateInterface
+     * @return \Twig_Template
      */
     protected function getTemplate($name)
     {
-        $menuConfig = $this->menuConfigProvider->getMenuConfig($name);
+        $menuConfig = $this->container->get('dm_menu.menu_config_provider')->getMenuConfig($name);
 
-        return $this->twig->loadTemplate($menuConfig['twig_template']);
+        return $this->container->get('twig')->loadTemplate($menuConfig['twig_template']);
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'dm_menu_extension';
